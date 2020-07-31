@@ -15,4 +15,14 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
+    <style name="YourLightTheme" parent="Theme.MaterialComponents.Light">
+
+        <!-- Conversations drawable icon in SupportActivity -->
+<!--        <item name="zs_helpConversationsIcon">@drawable/ic_baseline_message_24</item>-->
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/darker_gray</item>
+        <item name="colorAccent">@android:color/holo_red_dark</item>
+
+
+    </style>
 </resources>

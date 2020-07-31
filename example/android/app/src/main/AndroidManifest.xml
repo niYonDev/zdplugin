@@ -39,10 +39,19 @@
         </activity>
         <activity
             android:name="zendesk.messaging.MessagingActivity"
-            android:theme="@style/ZendeskSdkTheme.Light" />
+            android:theme="@style/ZendeskSdkTheme.Dark" />
         <activity
             android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/YourLightTheme" />
+        <activity
+            android:name="zendesk.support.requestlist.RequestListActivity"
             android:theme="@style/ZendeskSdkTheme.Light" />
+        <activity
+            android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/ZendeskSdkTheme.Light" />
+        <activity
+            android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/YourLightTheme" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
