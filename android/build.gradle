@@ -42,9 +42,9 @@ android {
 dependencies {
     //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation group: 'com.zendesk', name: 'messaging', version: '4.2.1'
+//    implementation group: 'com.zendesk', name: 'messaging', version: '4.2.1'
     implementation group: 'com.zendesk', name: 'support', version: '4.0.0'
-    implementation group: 'com.zendesk', name: 'chat', version: '2.0.0'
 //    implementation group: 'com.zendesk', name: 'chat', version: '2.0.0'
     implementation group: 'com.zendesk', name: 'answerbot', version: '2.0.0'
+    implementation group: 'com.zopim.android', name: 'sdk', version: '1.4.9'
 }

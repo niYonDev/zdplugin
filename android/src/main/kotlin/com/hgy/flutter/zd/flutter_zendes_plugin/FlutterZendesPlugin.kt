@@ -3,6 +3,10 @@ package com.hgy.flutter.zd.flutter_zendes_plugin
 import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
+import com.zopim.android.sdk.api.ZopimChat
+import com.zopim.android.sdk.model.VisitorInfo
+import com.zopim.android.sdk.prechat.PreChatForm
+import com.zopim.android.sdk.prechat.ZopimChatActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -12,16 +16,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import zendesk.answerbot.AnswerBot
-import zendesk.answerbot.AnswerBotEngine
-import zendesk.chat.Chat
-import zendesk.chat.ChatConfiguration
-import zendesk.chat.ChatEngine
-import zendesk.chat.VisitorInfo
-import zendesk.core.AnonymousIdentity
 import zendesk.core.Zendesk
-import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
-import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
 
 
@@ -34,6 +30,11 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
     private lateinit var activity: Activity
+    private val SUBDOMAIN_URL = "https://brplay.zendesk.com"
+    private val APPLICATION_ID = "6783b5375f399d60da5242b77dc5fa5a888c51d39d841212"
+    private val OAUTH_CLIENT_ID = "mobile_sdk_client_a93b8a067e553b6f2f1f"
+    private val ACCOUNT_KEY = "tFh19KFTd8BBqP3gihF65iF9ep7q4sLa"
+
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_zendes_plugin")
@@ -64,39 +65,25 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
             "init" -> {
-                Zendesk.INSTANCE.init(this.context, "https://brplay.zendesk.com", "6783b5375f399d60da5242b77dc5fa5a888c51d39d841212", "mobile_sdk_client_a93b8a067e553b6f2f1f")
-                Support.INSTANCE.init(Zendesk.INSTANCE)
-                Chat.INSTANCE.init(this.context, "tFh19KFTd8BBqP3gihF65iF9ep7q4sLa")
-                AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
-                Zendesk.INSTANCE.setIdentity(
-                        AnonymousIdentity.Builder()
-                                .withNameIdentifier("HGY")
-                                .withEmailIdentifier("hobohoboom@gmail.com")
-                                .build()
-                )
 
+                // Sample breadcrumb
+                ZopimChat.trackEvent("Application Description ! Hello World!")
+
+                /**
+                 * Minimum chat configuration. Chat must be initialization before starting the chat.
+                 */
+                /**
+                 * Minimum chat configuration. Chat must be initialization before starting the chat.
+                 */
+                ZopimChat.init(ACCOUNT_KEY)
+                Support.INSTANCE.init(Zendesk.INSTANCE)
+                AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
                 result.success("Init completed!")
             }
             "startChat" -> {
 
-                val chatConfiguration = ChatConfiguration.builder()
-                        .withPreChatFormEnabled(false)
-                        .withAgentAvailabilityEnabled(false)
-                        .build()
-                val profileProvider = Chat.INSTANCE.providers()!!.profileProvider()
-                val chatProvider = Chat.INSTANCE.providers()!!.chatProvider()
+                buttonPreSetData()
 
-                val visitorInfo = VisitorInfo.builder()
-                        .withName("Bob")
-                        .withEmail("bob@example.com")
-                        .withPhoneNumber("123456") // numeric string
-                        .build()
-                profileProvider.setVisitorInfo(visitorInfo, null)
-                chatProvider.setDepartment("Department name", null)
-                Zendesk.INSTANCE.setIdentity(AnonymousIdentity())
-                MessagingActivity.builder()
-                        .withEngines(SupportEngine.engine(), ChatEngine.engine(), AnswerBotEngine.engine())
-                        .show(activity, chatConfiguration);
             }
             "helpCenter" -> {
                 HelpCenterActivity.builder()
@@ -108,16 +95,48 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
         }
     }
 
+    /**
+     * Pre-sets [com.zopim.android.sdk.model.VisitorInfo] data in the chat config and starts the new chat
+     */
+    private fun buttonPreSetData() {
+        // build and set visitor info
+        val visitorInfo = VisitorInfo.Builder()
+                .phoneNumber("+8618521314531")
+                .email("hobohoboom@gmail.com")
+                .name("Grayson")
+                .build()
+
+        // visitor info can be set at any point when that information becomes available
+        ZopimChat.setVisitorInfo(visitorInfo)
+
+        // set pre chat fields as mandatory
+        val preChatForm = PreChatForm.Builder()
+                .name(PreChatForm.Field.REQUIRED_EDITABLE)
+                .email(PreChatForm.Field.REQUIRED_EDITABLE)
+                .phoneNumber(PreChatForm.Field.REQUIRED_EDITABLE)
+                .department(PreChatForm.Field.REQUIRED_EDITABLE)
+                .message(PreChatForm.Field.REQUIRED_EDITABLE)
+                .build()
+
+        // build chat config
+        val config = ZopimChat.SessionConfig().preChatForm(preChatForm).department("Department My memory")
+
+        // start chat activity with config
+        ZopimChatActivity.startActivity(activity, config)
+
+        // Sample breadcrumb
+        ZopimChat.trackEvent("Started chat with pre-set visitor information,~~~~")
+    }
+
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
     override fun onDetachedFromActivity() {
-        TODO("Not yet implemented")
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        TODO("Not yet implemented")
+        activity = binding.activity
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -125,6 +144,5 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        TODO("Not yet implemented")
     }
 }
