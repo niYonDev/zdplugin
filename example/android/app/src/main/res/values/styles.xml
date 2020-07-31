@@ -15,14 +15,30 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
-    <style name="YourLightTheme" parent="Theme.MaterialComponents.Light">
+    <style name="YourLightTheme1" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+        <item name="colorAccent">@android:color/holo_purple</item>
 
-        <!-- Conversations drawable icon in SupportActivity -->
-<!--        <item name="zs_helpConversationsIcon">@drawable/ic_baseline_message_24</item>-->
-        <item name="colorPrimary">@android:color/black</item>
+
+    </style>
+<!--    &lt;!&ndash; Base application theme. &ndash;&gt;-->
+<!--    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+<!--        <item name="colorAccent">@color/colorAccent</item>-->
+<!--    </style>-->
+
+    <style name="HelpCenterTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">#FFFFF9</item>
         <item name="colorPrimaryDark">@android:color/darker_gray</item>
-        <item name="colorAccent">@android:color/holo_red_dark</item>
+        <item name="colorAccent">#DB4537</item>
+    </style>
 
-
+    <style name="RequestsTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">#44BB44</item>
+        <item name="colorPrimaryDark">#448844</item>
+        <item name="colorAccent">#DDDD00</item>
     </style>
 </resources>
