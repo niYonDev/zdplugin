@@ -8,8 +8,8 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/YourLightTheme1"
-        android:label="flutter_zendes_plugin_example">
+        android:label="flutter_zendes_plugin_example"
+        android:theme="@style/YourLightTheme1">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -38,20 +38,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity-->
-<!--            android:name="zendesk.messaging.MessagingActivity"-->
-<!--            android:theme="@style/HelpCenterTheme" />-->
-<!--        <activity-->
-<!--            android:name="zendesk.support.guide.HelpCenterActivity"-->
-<!--            />-->
-<!--        <activity-->
-<!--            android:name="zendesk.support.requestlist.RequestListActivity"-->
-<!--             />-->
-<!--        <activity-->
-<!--            android:name="zendesk.support.request.RequestActivity"-->
-<!--             />-->
-<!--        <activity-->
-<!--            android:name="zendesk.support.guide.ViewArticleActivity" />-->
+        <activity android:name="zendesk.messaging.MessagingActivity" />
+        <activity
+            android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/HelpCenterTheme" />
+        <activity android:name="zendesk.support.requestlist.RequestListActivity" />
+        <activity android:name="zendesk.support.request.RequestActivity" />
+        <activity android:name="zendesk.support.guide.ViewArticleActivity" />
+        <activity android:name="com.zopim.android.sdk.prechat.ZopimChatActivity"
+             />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

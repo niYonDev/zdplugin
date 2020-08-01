@@ -117,7 +117,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
 
         // visitor info can be set at any point when that information becomes available
         ZopimChat.setVisitorInfo(visitorInfo)
-
         // set pre chat fields as mandatory
         val preChatForm = PreChatForm.Builder()
                 .name(PreChatForm.Field.REQUIRED_EDITABLE)
