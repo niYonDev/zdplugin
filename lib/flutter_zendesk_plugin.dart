@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:package_info/package_info.dart';
 
-class FlutterZendesPlugin {
+class FlutterZendeskPlugin {
   static const MethodChannel _channel =
       const MethodChannel('flutter_zendes_plugin');
 
@@ -14,7 +14,8 @@ class FlutterZendesPlugin {
     return version;
   }
 
-  Future<void> init(String accountKey, {String applicationId}) async {
+  Future<void> init(String accountKey,
+      {String applicationId, String clientId, String domainUrl}) async {
     if (applicationId == null || applicationId.isEmpty) {
       PackageInfo pi = await PackageInfo.fromPlatform();
       applicationId = '${pi.appName}, v${pi.version}(${pi.buildNumber})';
@@ -23,12 +24,18 @@ class FlutterZendesPlugin {
     final String result = await _channel.invokeMethod('init', <String, dynamic>{
       'accountKey': accountKey,
       'applicationId': applicationId,
+      'clientId': clientId,
+      'domainUrl': domainUrl,
     });
     debugPrint('Init result ="$result"');
   }
 
-  Future<void> startChat() async {
-    return await _channel.invokeMethod('startChat');
+  Future<void> startChat({String phone, String name, String email}) async {
+    return await _channel.invokeMethod('startChat', <String, dynamic>{
+      'phone': phone,
+      'email': email,
+      'name': name,
+    });
   }
 
   Future<void> helpCenter() async {

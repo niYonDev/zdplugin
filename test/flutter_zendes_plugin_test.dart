@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_zendes_plugin/flutter_zendes_plugin.dart';
+import 'package:flutter_zendesk_plugin/flutter_zendesk_plugin.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('flutter_zendes_plugin');
@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await FlutterZendesPlugin.platformVersion, '42');
+    expect(await FlutterZendeskPlugin.platformVersion, '42');
   });
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_zendes_plugin/flutter_zendes_plugin.dart';
+import 'package:flutter_zendes_plugin/flutter_zendesk_plugin.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,9 +15,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _accountkey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
+  String _accountKey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
   String _applicationId = '6783b5375f399d60da5242b77dc5fa5a888c51d39d841212';
-  FlutterZendesPlugin _flutterPlugin = FlutterZendesPlugin();
+  String _clientId = 'mobile_sdk_client_a93b8a067e553b6f2f1f';
+  String _domainUrl = 'https://brplay.zendesk.com';
+  FlutterZendeskPlugin _flutterPlugin = FlutterZendeskPlugin();
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +32,11 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      platformVersion = await FlutterZendesPlugin.platformVersion;
-      _flutterPlugin.init("accountKey");
+      platformVersion = await FlutterZendeskPlugin.platformVersion;
+      _flutterPlugin.init(_accountKey,
+          applicationId: _applicationId,
+          clientId: _clientId,
+          domainUrl: _domainUrl);
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -61,9 +67,8 @@ class _MyAppState extends State<MyApp> {
             Text('Chat status: '),
             RaisedButton(
               onPressed: () async {
-                await _flutterPlugin.startChat();
-//                await _chatApi.startChat('Test Visitor Name',
-//                    department: 'Card');
+                await _flutterPlugin.startChat(
+                    phone: "17384725179", name: "HGY", email: "HGY@gmail.com");
               },
               child: Text("Start Chat"),
             ),
@@ -72,48 +77,6 @@ class _MyAppState extends State<MyApp> {
                 await _flutterPlugin.helpCenter();
               },
               child: Text("Help Center"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-//                    final file =
-//                    await ImagePicker.pickImage(source: ImageSource.gallery);
-//                    if (file != null) {
-//                      try {
-//                        await _chatApi.sendAttachment(file.path);
-//                      } on PlatformException catch (e) {
-//                        debugPrint('An error occurred: ${e.code}');
-//                      }
-//                    }
-//                    ;
-              },
-              child: Text("Send Attachment"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-//                    await _chatApi.sendChatRating(ChatRating.GOOD,
-//                        comment: 'Good service');
-              },
-              child: Text("Send GOOD Rating"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-//                    await _chatApi.sendChatRating(ChatRating.BAD,
-//                        comment: 'Bad service');
-              },
-              child: Text("Send BAD Rating"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-//                    await _chatApi
-//                        .sendOfflineMessage('Offline Greeting from Visitor');
-              },
-              child: Text("Send Offline Message"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-//                    await _chatApi.endChat();
-              },
-              child: Text("EndChat"),
             ),
           ],
         )),
