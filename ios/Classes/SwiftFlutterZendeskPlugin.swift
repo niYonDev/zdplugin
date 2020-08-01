@@ -3,7 +3,7 @@ import UIKit
 
 public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_zendesk_plugin", binaryMessenger: registrar.messenger())
+    let channel = FlutterMethodChannel(name: "flutter_zendes_plugin", binaryMessenger: registrar.messenger())
     let instance = SwiftFlutterZendeskPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
