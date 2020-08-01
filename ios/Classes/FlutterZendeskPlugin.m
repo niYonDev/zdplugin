@@ -1,6 +1,6 @@
 #import "FlutterZendeskPlugin.h"
 #if __has_include(<flutter_zendes_plugin/flutter_zendes_plugin-Swift.h>)
-#import <flutter_zendesk_plugin/flutter_zendesk_plugin-Swift.h>
+#import <flutter_zendes_plugin/flutter_zendes_plugin-Swift.h>
 #else
 // Support project import fallback if the generated compatibility header
 // is not copied when this plugin is created as a library.
@@ -10,6 +10,6 @@
 
 @implementation FlutterZendesPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftFlutterZendesPlugin registerWithRegistrar:registrar];
+  [SwiftFlutterZendeskPlugin registerWithRegistrar:registrar];
 }
 @end
