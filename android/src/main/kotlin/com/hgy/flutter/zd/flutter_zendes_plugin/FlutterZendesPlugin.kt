@@ -15,7 +15,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import zendesk.answerbot.AnswerBot
+import zendesk.core.AnonymousIdentity
+import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
@@ -34,7 +35,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     private val APPLICATION_ID = "6783b5375f399d60da5242b77dc5fa5a888c51d39d841212"
     private val OAUTH_CLIENT_ID = "mobile_sdk_client_a93b8a067e553b6f2f1f"
     private val ACCOUNT_KEY = "tFh19KFTd8BBqP3gihF65iF9ep7q4sLa"
-
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "flutter_zendes_plugin")
@@ -77,7 +77,12 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                  */
                 ZopimChat.init(ACCOUNT_KEY)
                 Support.INSTANCE.init(Zendesk.INSTANCE)
-                AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
+                Zendesk.INSTANCE.init(activity, SUBDOMAIN_URL, APPLICATION_ID, OAUTH_CLIENT_ID)
+
+                val identity: Identity = AnonymousIdentity()
+                Zendesk.INSTANCE.setIdentity(identity)
+
+                Support.INSTANCE.init(Zendesk.INSTANCE)
                 result.success("Init completed!")
             }
             "startChat" -> {
@@ -88,6 +93,10 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             "helpCenter" -> {
                 HelpCenterActivity.builder()
                         .show(activity)
+//                RequestListActivity.builder().show(context)
+//                val intent = Intent(context, HelpCenterActivity::class.java)
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                context.startActivity(intent)
             }
             else -> {
                 result.notImplemented()
@@ -136,7 +145,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activity = binding.activity
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
