@@ -17,9 +17,9 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
-import zendesk.core.JwtIdentity
 import zendesk.core.Zendesk
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
@@ -148,9 +148,13 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 }
             }
             "helpCenter" -> {
+                val helpCenterConfig: Configuration = HelpCenterActivity.builder()
+                        .withCategoriesCollapsed(false)
+                        .withContactUsButtonVisible(true)
+                        .withShowConversationsMenuButton(true)
+                        .config()
                 HelpCenterActivity.builder()
-                        .withContactUsButtonVisible(false)
-                        .show(activity)
+                        .show(activity, helpCenterConfig)
             }
             else -> {
                 result.notImplemented()
