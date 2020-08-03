@@ -1,7 +1,6 @@
 name: flutter_zendes_plugin
 description: A Zendes Flutter plugin.
 version: 0.0.9
-author: HGY
 homepage: https://github.com/MrHou/zdplugin
 
 environment:
