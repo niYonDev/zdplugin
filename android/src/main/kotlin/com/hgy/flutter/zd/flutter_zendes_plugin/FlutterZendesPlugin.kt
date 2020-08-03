@@ -19,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
+import zendesk.core.JwtIdentity
 import zendesk.core.Zendesk
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
@@ -70,29 +71,54 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             }
             "init" -> {
                 val accountKey = call.argument<String>("accountKey")
-                val applicationId = call.argument<String>("applicationId")
-                val clientId = call.argument<String>("clientId")
-                val domainUrl = call.argument<String>("domainUrl")
+                val applicationId = call.argument<String>("applicationId") ?: ""
+                val clientId = call.argument<String>("clientId") ?: ""
+                val domainUrl = call.argument<String>("domainUrl") ?: ""
                 if (ObjectUtils.checkNonNull(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
                 }
-                // Sample breadcrumb
-                ZopimChat.trackEvent("Application Description ! Hello World!")
+                /**
+                 * Initialize the SDK with your Zendesk subdomain, mobile SDK app ID, and client ID.
+                 *
+                 * Get these details from your Zendesk dashboard: Admin -> Channels -> MobileSDK.
+                 */
+                Zendesk.INSTANCE.init(activity,
+                        domainUrl,
+                        applicationId,
+                        clientId)
 
                 /**
-                 * Minimum chat configuration. Chat must be initialization before starting the chat.
+                 * Set an identity (authentication).
+                 *
+                 * Set either Anonymous or JWT identity, as below:
                  */
-                /**
-                 * Minimum chat configuration. Chat must be initialization before starting the chat.
-                 */
-                ZopimChat.init(accountKey)
-                Support.INSTANCE.init(Zendesk.INSTANCE)
-                domainUrl?.let { applicationId?.let { it1 -> Zendesk.INSTANCE.init(activity, it, it1, clientId) } }
 
+                // a). Anonymous (All fields are optional)
+                /**
+                 * Set an identity (authentication).
+                 *
+                 * Set either Anonymous or JWT identity, as below:
+                 */
+
+                // a). Anonymous (All fields are optional)
+                Zendesk.INSTANCE.setIdentity(
+                        AnonymousIdentity.Builder()
+                                .withNameIdentifier("{optional name}")
+                                .withEmailIdentifier("{optional email}")
+                                .build()
+                )
+
+                // b). JWT (Must be initialized with your JWT identifier)
+
+                // b). JWT (Must be initialized with your JWT identifier)
                 val identity: Identity = AnonymousIdentity()
                 Zendesk.INSTANCE.setIdentity(identity)
 
                 Support.INSTANCE.init(Zendesk.INSTANCE)
+                // Sample breadcrumb
+                ZopimChat.init(accountKey)
+                ZopimChat.trackEvent("Application Description ! Hello World!")
+
                 result.success("Init completed!")
             }
             "startChat" -> {
@@ -123,6 +149,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             }
             "helpCenter" -> {
                 HelpCenterActivity.builder()
+                        .withContactUsButtonVisible(false)
                         .show(activity)
             }
             else -> {
