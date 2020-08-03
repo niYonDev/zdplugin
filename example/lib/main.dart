@@ -74,7 +74,9 @@ class _MyAppState extends State<MyApp> {
             ),
             RaisedButton(
               onPressed: () async {
-                await _flutterPlugin.helpCenter();
+                await _flutterPlugin.helpCenter().then((value) {
+                  print('object<<<<<<<<<<<<< ' + value.toString());
+                });
               },
               child: Text("Help Center"),
             ),

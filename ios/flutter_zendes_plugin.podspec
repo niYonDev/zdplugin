@@ -20,4 +20,8 @@ A Zendes Flutter plugin.
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
   s.swift_version = '5.0'
+  s.dependency 'ZendeskSupportProvidersSDK', '5.0.5'
+  s.dependency 'ZendeskSupportSDK', '5.0.5'
+  s.dependency 'ZDCChat', '1.4.7'
+  #s.dependency 'ZendeskChatSDK', '2.7.0'
 end

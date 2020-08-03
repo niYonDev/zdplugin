@@ -38,7 +38,7 @@ class FlutterZendeskPlugin {
     });
   }
 
-  Future<void> helpCenter() async {
+  Future<dynamic> helpCenter() async {
     return await _channel.invokeMethod('helpCenter');
   }
 }
