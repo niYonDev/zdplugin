@@ -1,111 +1,98 @@
 import Flutter
 import UIKit
 import SupportSDK
-import ZDCChat
+import ChatSDK
+import ChatProvidersSDK
 import ZendeskCoreSDK
-
-//import ChatSDK
-//import ChatProvidersSDK
 
 import MessagingSDK
 
 public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     
-//    var hcConfig: HelpCenterUiConfiguration {
-//        let hcConfig = HelpCenterUiConfiguration()
-//        return hcConfig
-//    }
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_zendes_plugin", binaryMessenger: registrar.messenger())
-    let instance = SwiftFlutterZendeskPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS handle:" + call.method)
-
-    switch call.method {
-    case "init":
-        guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-
-        let accountKey = dic["accountKey"] as? String ?? ""
-        let applicationId = dic["applicationId"] as? String ?? ""
-        let clientId = dic["clientId"] as? String ?? ""
-        let domainUrl = dic["domainUrl"] as? String ?? ""
-
-                            Zendesk.initialize(appId: applicationId,
-                           clientId: clientId,
-                           zendeskUrl: domainUrl)
-        
-        Support.initialize(withZendesk: Zendesk.instance)
-        
-        let ident = Identity.createAnonymous()
-        Zendesk.instance?.setIdentity(ident)
-        
-        
-        Zendesk.instance?.setIdentity(Identity.createAnonymous(name: "name", email: "name@email.com"))
-        ZDCChat.initialize(withAccountKey: accountKey)
-        result("iOS init completed" )
-    case "startChat":
-        guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-
-        let type = dic["type"] as? Int ?? 0
-        let phone = dic["phone"] as? String ?? ""
-        let email = dic["email"] as? String ?? ""
-        let name = dic["name"] as? String ?? ""
-        
-//        let chatEngine = try ChatEngine.engine()
-//        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [])
-//
-//        self.navigationController?.pushViewController(viewController, animated: true)
-        let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
-        ZDCChat.start(in: navigationController, withConfig: nil)
-               
-        // Hides the back button because we are in a tab controller
-        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = false
-            
-    case "helpCenter":
-        let currentVC = UIApplication.shared.keyWindow?.rootViewController
-        let hcConfig = HelpCenterUiConfiguration()
-        let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
-        currentVC?.present(helpCenter, animated: true, completion: nil)
-        
-//        let hcConfig = HelpCenterUiConfiguration()
-//        hcConfig.showContactOptions = true
-//        hcConfig.labels = ["label"]
-////        hcConfig.groupType = .category
-////        hcConfig.groupIds = []
-//        let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
-//        let navigationController = UIApplication.shared.keyWindow?.rootViewController
-//        navigationController?.present(helpCenter, animated: true, completion: nil)
-//        let ss = (navigationController == nil) ? "no controller" : "No"
-        result("iOS helpCenter UI:" + helpCenter.description + "   ")
-//
-//        print("<<<<<<<<<<<<<<<<< helpCenter")
-        
-    default:
-        break
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "flutter_zendes_plugin", binaryMessenger: registrar.messenger())
+        let instance = SwiftFlutterZendeskPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
     }
-  }
     
-    func startChat() throws {
-        /*
-        do {
-
-            let chatEngine = try ChatEngine.engine()
-            let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [])
-
-            self.navigationController?.pushViewController(viewController, animated: true)
-        } catch {
-            // handle error
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        result("iOS handle:" + call.method)
+        
+        switch call.method {
+        case "init":
+            Logger.isEnabled = true
+            Logger.defaultLevel = .verbose
+            guard let dic = call.arguments as? Dictionary<String, Any> else { return }
+            
+            let accountKey = dic["accountKey"] as? String ?? ""
+            let applicationId = dic["applicationId"] as? String ?? ""
+            let clientId = dic["clientId"] as? String ?? ""
+            let domainUrl = dic["domainUrl"] as? String ?? ""
+            let emailIdentifier = dic["emailIdentifier"] as? String ?? "emailIdentifier"
+            let nameIdentifier = dic["nameIdentifier"] as? String ?? "nameIdentifier"
+            
+            Zendesk.initialize(appId: applicationId,
+                               clientId: clientId,
+                               zendeskUrl: domainUrl)
+            
+            Support.initialize(withZendesk: Zendesk.instance)
+            
+            
+            Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
+            
+            //CHAT SDK
+            Chat.initialize(accountKey: accountKey)
+            result("iOS init completed" )
+        case "startChat":
+            guard let dic = call.arguments as? Dictionary<String, Any> else { return }
+            
+            let phone = dic["phone"] as? String ?? ""
+            let email = dic["email"] as? String ?? ""
+            let name = dic["name"] as? String ?? ""
+            do {
+                try startChat(name: name, email: email, phone: phone)
+            } catch let error{
+                print("error:\(error)")//捕捉到错误，处理错误
+            }
+            
+        case "helpCenter":
+            let currentVC = UIApplication.shared.keyWindow?.rootViewController
+            let hcConfig = HelpCenterUiConfiguration()
+            let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
+            currentVC?.present(helpCenter, animated: true, completion: nil)
+            result("iOS helpCenter UI:" + helpCenter.description + "   ")
+        default:
+            break
         }
-       Name for Bot messages
-      
-        let viewController = try Messaging.instance.buildUI(engines: [])
-
-       Present view controller
-      self.navigationController?.pushViewController(viewController, animated: true)
-         ZDCChat.start(in: UINavigationController!, withConfig: <#T##ZDCConfigBlock!##ZDCConfigBlock!##(ZDCConfig?) -> Void#>)
-        */
+    }
+    
+    func startChat(name:String,email:String,phone:String) throws {
+        let chatConfiguration = ChatConfiguration()
+        chatConfiguration.isAgentAvailabilityEnabled = true
+        chatConfiguration.isPreChatFormEnabled = true
+        
+        let chatAPIConfiguration = ChatAPIConfiguration()
+        chatAPIConfiguration.department = "Department name"
+        chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
+        Chat.instance?.configuration = chatAPIConfiguration
+        // Name for Bot messages
+        let messagingConfiguration = MessagingConfiguration()
+        messagingConfiguration.name = "Chat Bot"
+        
+        
+        
+        // Build view controller
+        let chatEngine = try ChatEngine.engine()
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration, chatConfiguration])
+        
+        
+        if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        }else{
+            let navigationController = UIApplication.shared.keyWindow?.rootViewController
+            navigationController?.present(viewController
+                , animated: true, completion: nil)
+        }
+        
     }
 }
