@@ -5,6 +5,7 @@ package com.hgy.flutter.zd.flutter_zendes_plugin
 //import com.zopim.android.sdk.prechat.PreChatForm
 //import com.zopim.android.sdk.prechat.ZopimChatActivity
 import android.app.Activity
+import android.text.TextUtils
 import androidx.annotation.NonNull
 import com.zendesk.util.ObjectUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -15,15 +16,16 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import zendesk.chat.Chat
-import zendesk.chat.ChatConfiguration
-import zendesk.chat.ChatEngine
+import zendesk.answerbot.AnswerBot
+import zendesk.answerbot.AnswerBotEngine
+import zendesk.chat.*
 import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
+import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
 
 
@@ -75,53 +77,29 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val accountKey = call.argument<String>("accountKey") ?: ""
                 val applicationId = call.argument<String>("applicationId") ?: ""
                 val clientId = call.argument<String>("clientId") ?: ""
-                val domainUrl = call.argument<String>("domainUrl") ?: ""
-                if (ObjectUtils.checkNonNull(accountKey)) {
+                val zendeskUrl = call.argument<String>("domainUrl") ?: ""
+                val nameIdentifier = call.argument<String>("nameIdentifier") ?: "nameIdentifier"
+                val emailIdentifier = call.argument<String>("emailIdentifier") ?: "emailIdentifier"
+                if (TextUtils.isEmpty(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
                 }
-                /**
-                 * Initialize the SDK with your Zendesk subdomain, mobile SDK app ID, and client ID.
-                 *
-                 * Get these details from your Zendesk dashboard: Admin -> Channels -> MobileSDK.
-                 */
+                //Support SDK
                 Zendesk.INSTANCE.init(activity,
-                        domainUrl,
+                        zendeskUrl,
                         applicationId,
                         clientId)
-
-                /**
-                 * Set an identity (authentication).
-                 *
-                 * Set either Anonymous or JWT identity, as below:
-                 */
-
-                // a). Anonymous (All fields are optional)
-                /**
-                 * Set an identity (authentication).
-                 *
-                 * Set either Anonymous or JWT identity, as below:
-                 */
-
-                // a). Anonymous (All fields are optional)
+                //setIdentity
                 Zendesk.INSTANCE.setIdentity(
                         AnonymousIdentity.Builder()
-                                .withNameIdentifier("{optional name}")
-                                .withEmailIdentifier("{optional email}")
+                                .withNameIdentifier(nameIdentifier)
+                                .withEmailIdentifier(emailIdentifier)
                                 .build()
                 )
-
-                // b). JWT (Must be initialized with your JWT identifier)
-
-                // b). JWT (Must be initialized with your JWT identifier)
-                val identity: Identity = AnonymousIdentity()
-                Zendesk.INSTANCE.setIdentity(identity)
-
                 Support.INSTANCE.init(Zendesk.INSTANCE)
-                // Sample breadcrumb
-//                ZopimChat.init(accountKey)
-//                ZopimChat.trackEvent("Application Description ! Hello World!")
-
+                //Chat SDK
                 Chat.INSTANCE.init(activity, accountKey)
+                //AnswerBot SDK
+                AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
                 result.success("Init completed!")
             }
             "startChat" -> {
@@ -129,37 +107,42 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val phone = call.argument<String>("phone") ?: ""
                 val email = call.argument<String>("email") ?: ""
                 val name = call.argument<String>("name") ?: ""
-                val chatConfiguration = ChatConfiguration.builder().build()
-
+                val botLabel = call.argument<String>("botLabel")
+                val toolbarTitle = call.argument<String>("toolbarTitle")
+                val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
+                val chatConfiguration = ChatConfiguration.builder()
+                        //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
+                        //如果为true，并且没有代理商可以为访客提供服务，则会向他们显示一条消息，告知他们没有代理商。如果已禁用，则访问者将排队等候代理。默认为true。
+                        .withAgentAvailabilityEnabled(true)
+                        //If true, visitors will be prompted at the end of the chat if they wish to receive a chat transcript or not. Defaults to true.
+                        .withTranscriptEnabled(true)
+                        .withOfflineFormEnabled(true)
+                        //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
+                        //如果为true，则会在开始聊天之前以对话方式提示访问者输入信息。默认为true。
+                        .withPreChatFormEnabled(true)
+                        .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                        .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                        .withPhoneFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                        .withDepartmentFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                        .build()
                 MessagingActivity.builder()
-                        .withEngines(ChatEngine.engine())
+                        .withBotLabelString(botLabel)
+                        .withBotAvatarDrawable(botAvatar)
+                        .withToolbarTitle(toolbarTitle)
+                        .withEngines(ChatEngine.engine(), AnswerBotEngine.engine(),SupportEngine.engine())
                         .show(activity, chatConfiguration)
-//                when (type) {
-//                    0 -> {
-//                        startNoConfigChat(activity)
-//                    }
-//                    1 -> {
-//                        startOptionalPreChat(activity)
-//                    }
-//                    2 -> {
-//                        startNoConfigChat(activity)
-//                    }
-//                    3 -> {
-//                        startNoPreChat(activity)
-//                    }
-//                    4 -> {
-//                        startMandatoryPreChat(activity)
-//                    }
-//                    5 -> {
-//                        startPreSetData(phone, email, name)
-//                    }
-//                }
+
             }
             "helpCenter" -> {
+                val categoriesCollapsed = call.argument<Boolean>("categoriesCollapsed") ?: false
+                val contactUsButtonVisible = call.argument<Boolean>("contactUsButtonVisible")
+                        ?: true
+                val showConversationsMenuButton = call.argument<Boolean>("showConversationsMenuButton")
+                        ?: true
                 val helpCenterConfig: Configuration = HelpCenterActivity.builder()
-                        .withCategoriesCollapsed(false)
-                        .withContactUsButtonVisible(true)
-                        .withShowConversationsMenuButton(true)
+                        .withCategoriesCollapsed(categoriesCollapsed)
+                        .withContactUsButtonVisible(contactUsButtonVisible)
+                        .withShowConversationsMenuButton(showConversationsMenuButton)
                         .config()
                 HelpCenterActivity.builder()
                         .show(activity, helpCenterConfig)
@@ -169,7 +152,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             }
         }
     }
-//
+
 //    /**
 //     * Pre-sets [com.zopim.android.sdk.model.VisitorInfo] data in the chat config and starts the new chat
 //     */
@@ -209,10 +192,13 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
 //     * @see Global
 //     */
 //    private fun startNoConfigChat(context: Context) {
-//        context.startActivity(Intent(context, ZopimChatActivity::class.java))
+//        val chatConfiguration = ChatConfiguration.builder().build()
 //
-//        // Sample breadcrumb
-//        ZopimChat.trackEvent("Started chat without config")
+////        context.startActivity(Intent(context, ZopimChatActivity::class.java))
+////
+////        // Sample breadcrumb
+////        ZopimChat.trackEvent("Started chat without config")
+//
 //    }
 //
 //    /**

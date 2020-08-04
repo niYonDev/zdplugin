@@ -68,7 +68,11 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               onPressed: () async {
                 await _flutterPlugin.startChat(
-                    phone: "17384725179", name: "HGY", email: "HGY@gmail.com");
+                    phone: "17384725179",
+                    name: "HGY",
+                    email: "HGY@gmail.com",
+                    botLabel: "BR PLAY Bot",
+                    toolbarTitle: "在线客服");
               },
               child: Text("Start Chat"),
             ),
