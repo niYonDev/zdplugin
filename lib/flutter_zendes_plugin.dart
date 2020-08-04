@@ -15,7 +15,7 @@ class FlutterZendeskPlugin {
   }
 
   Future<void> init(String accountKey,
-      {String applicationId, String clientId, String domainUrl}) async {
+      {String applicationId, String clientId, String domainUrl,String nameIdentifier,String emailIdentifier}) async {
     if (applicationId == null || applicationId.isEmpty) {
       PackageInfo pi = await PackageInfo.fromPlatform();
       applicationId = '${pi.appName}, v${pi.version}(${pi.buildNumber})';
@@ -26,6 +26,8 @@ class FlutterZendeskPlugin {
       'applicationId': applicationId,
       'clientId': clientId,
       'domainUrl': domainUrl,
+      'emailIdentifier': emailIdentifier,
+      'nameIdentifier': nameIdentifier,
     });
     debugPrint('Init result ="$result"');
   }

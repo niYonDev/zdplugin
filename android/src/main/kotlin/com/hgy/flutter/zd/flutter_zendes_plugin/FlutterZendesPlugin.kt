@@ -7,6 +7,8 @@ package com.hgy.flutter.zd.flutter_zendes_plugin
 import android.app.Activity
 import android.text.TextUtils
 import androidx.annotation.NonNull
+import com.zendesk.service.ErrorResponse
+import com.zendesk.service.ZendeskCallback
 import com.zendesk.util.ObjectUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -24,6 +26,7 @@ import zendesk.core.AnonymousIdentity
 import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
+import zendesk.messaging.ui.MessagingView
 import zendesk.support.Support
 import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
@@ -103,22 +106,20 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 result.success("Init completed!")
             }
             "startChat" -> {
-                val type = call.argument<Int>("type") ?: 0
                 val phone = call.argument<String>("phone") ?: ""
                 val email = call.argument<String>("email") ?: ""
                 val name = call.argument<String>("name") ?: ""
                 val botLabel = call.argument<String>("botLabel")
                 val toolbarTitle = call.argument<String>("toolbarTitle")
                 val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
+                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
                 val chatConfiguration = ChatConfiguration.builder()
                         //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
-                        //如果为true，并且没有代理商可以为访客提供服务，则会向他们显示一条消息，告知他们没有代理商。如果已禁用，则访问者将排队等候代理。默认为true。
                         .withAgentAvailabilityEnabled(true)
                         //If true, visitors will be prompted at the end of the chat if they wish to receive a chat transcript or not. Defaults to true.
                         .withTranscriptEnabled(true)
                         .withOfflineFormEnabled(true)
                         //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
-                        //如果为true，则会在开始聊天之前以对话方式提示访问者输入信息。默认为true。
                         .withPreChatFormEnabled(true)
                         .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                         .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
@@ -129,7 +130,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withBotLabelString(botLabel)
                         .withBotAvatarDrawable(botAvatar)
                         .withToolbarTitle(toolbarTitle)
-                        .withEngines(ChatEngine.engine(), AnswerBotEngine.engine(),SupportEngine.engine())
+                        .withEngines(ChatEngine.engine(), AnswerBotEngine.engine(), SupportEngine.engine())
                         .show(activity, chatConfiguration)
 
             }

@@ -2,10 +2,19 @@ PODS:
   - Flutter (1.0.0)
   - flutter_zendes_plugin (0.0.1):
     - Flutter
+    - ZDCChat (= 1.4.7)
     - ZendeskChatSDK (= 2.7.0)
     - ZendeskSupportSDK (= 5.0.5)
   - package_info (0.0.1):
     - Flutter
+  - ZDCChat (1.4.7):
+    - ZDCChat/API (= 1.4.7)
+    - ZDCChat/Localization (= 1.4.7)
+    - ZDCChat/UI (= 1.4.7)
+  - ZDCChat/API (1.4.7)
+  - ZDCChat/Localization (1.4.7)
+  - ZDCChat/UI (1.4.7):
+    - ZDCChat/API
   - ZendeskChatProvidersSDK (2.7.0)
   - ZendeskChatSDK (2.7.0):
     - ZendeskChatProvidersSDK (~> 2.7.0)
@@ -32,6 +41,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ZDCChat
     - ZendeskChatProvidersSDK
     - ZendeskChatSDK
     - ZendeskCommonUISDK
@@ -52,8 +62,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_zendes_plugin: b121b4090e0edf671e3cefc802193fe17e76439e
+  flutter_zendes_plugin: 38c907c3a73acbf2a750a41f5420aa2cdd550f80
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
+  ZDCChat: 46e070452e4543fab9f39913210dfff6527081d1
   ZendeskChatProvidersSDK: 478e7eb4c725c7b4c1c64fa1206ec369346267e4
   ZendeskChatSDK: b972e1ef63d84fb5b908f2d9a682e98b48eafc86
   ZendeskCommonUISDK: 0b5ae632c28545c6f7e0791902f5672494d5ccd0

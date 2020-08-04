@@ -4,7 +4,7 @@ import SupportSDK
 import ChatSDK
 import ChatProvidersSDK
 import ZendeskCoreSDK
-
+import ZDCChat
 import MessagingSDK
 
 public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
@@ -49,11 +49,16 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let phone = dic["phone"] as? String ?? ""
             let email = dic["email"] as? String ?? ""
             let name = dic["name"] as? String ?? ""
-            do {
-                try startChat(name: name, email: email, phone: phone)
-            } catch let error{
-                print("error:\(error)")//捕捉到错误，处理错误
-            }
+//            do {
+//                try startChat(name: name, email: email, phone: phone)
+//            } catch let error{
+//                print("error:\(error)")//捕捉到错误，处理错误
+//            }
+            let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+            ZDCChat.start(in: navigationController, withConfig: nil)
+                   
+            // Hides the back button because we are in a tab controller
+            ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = false
             
         case "helpCenter":
             let currentVC = UIApplication.shared.keyWindow?.rootViewController

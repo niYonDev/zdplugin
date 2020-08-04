@@ -22,4 +22,5 @@ A Zendes Flutter plugin.
   s.swift_version = '5.0'
   s.dependency 'ZendeskSupportSDK', '5.0.5'
   s.dependency 'ZendeskChatSDK', '2.7.0'
+  s.dependency 'ZDCChat', '1.4.7'
 end

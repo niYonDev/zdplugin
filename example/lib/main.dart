@@ -36,7 +36,9 @@ class _MyAppState extends State<MyApp> {
       _flutterPlugin.init(_accountKey,
           applicationId: _applicationId,
           clientId: _clientId,
-          domainUrl: _domainUrl);
+          domainUrl: _domainUrl,
+          nameIdentifier: "Grayson Identifier",
+          emailIdentifier: "Grayson@gmail.com");
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
