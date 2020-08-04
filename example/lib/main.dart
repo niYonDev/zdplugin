@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_zendes_plugin/flutter_zendesk_plugin.dart';
+import 'package:flutter_zendes_plugin/flutter_zendes_plugin.dart';
 
 void main() {
   runApp(MyApp());
