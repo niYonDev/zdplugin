@@ -1,6 +1,6 @@
-# flutter_zendes_plugin
+# flutter_zendesk_chat_support_plugin
 
-A Zendes Flutter plugin.
+A Zendesk Chat&Support Flutter plugin.
 
 ## Getting Started
 
