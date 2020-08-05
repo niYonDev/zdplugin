@@ -66,7 +66,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             break
         }
     }
-    func startChatV1(name:String,email:String,phone:String){
+    func startChatV1(name:String,email:String,phone:String) throws{
         //https://developer.zendesk.com/embeddables/docs/ios-chat-sdk/chat
         
         let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
@@ -74,7 +74,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
           user?.phone = phone
           user?.name = name
           user?.email = email
-          user?.addNote("This is a Swift note")
         }
         ZDCChat.start(in: navigationController, withConfig: {config in
             config?.preChatDataRequirements.name = .optional
