@@ -86,22 +86,23 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 if (TextUtils.isEmpty(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
                 }
-                //Support SDK
+                //1.Zendes SDK
                 Zendesk.INSTANCE.init(activity,
                         zendeskUrl,
                         applicationId,
                         clientId)
-                //setIdentity
+                //2.Support SDK init
+                Support.INSTANCE.init(Zendesk.INSTANCE)
+                //3.setIdentity
                 Zendesk.INSTANCE.setIdentity(
                         AnonymousIdentity.Builder()
                                 .withNameIdentifier(nameIdentifier)
                                 .withEmailIdentifier(emailIdentifier)
                                 .build()
                 )
-                Support.INSTANCE.init(Zendesk.INSTANCE)
-                //Chat SDK
+                //4.Chat SDK
                 Chat.INSTANCE.init(activity, accountKey)
-                //AnswerBot SDK
+                //5.AnswerBot SDK
                 AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
                 result.success("Init completed!")
             }
@@ -124,7 +125,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                         .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                         .withPhoneFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                        .withDepartmentFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                        .withDepartmentFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                         .build()
                 MessagingActivity.builder()
                         .withBotLabelString(botLabel)
