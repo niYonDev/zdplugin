@@ -1,6 +1,6 @@
 name: flutter_zendes_plugin
 description: A Zendesk Chat&Support Flutter plugin.
-version: 0.9.0
+version: 0.9.1
 homepage: https://github.com/MrHou/zdplugin
 
 environment:
