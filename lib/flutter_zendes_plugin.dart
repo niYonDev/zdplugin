@@ -32,13 +32,14 @@ class FlutterZendeskPlugin {
     debugPrint('Init result ="$result"');
   }
 
-  Future<void> startChat({String phone, String name, String email,String botLabel,String toolbarTitle}) async {
+  Future<void> startChat({String phone, String name, String email,String botLabel,String toolbarTitle,String departmentName}) async {
     return await _channel.invokeMethod('startChat', <String, dynamic>{
       'phone': phone,
       'email': email,
       'name': name,
       'botLabel': botLabel,
       'toolbarTitle': toolbarTitle,
+      'departmentName': departmentName,
     });
   }
 

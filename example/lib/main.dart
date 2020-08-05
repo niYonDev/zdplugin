@@ -74,6 +74,7 @@ class _MyAppState extends State<MyApp> {
                     name: "HGY",
                     email: "HGY@gmail.com",
                     botLabel: "BR PLAY Bot",
+                    departmentName: "Department Name",
                     toolbarTitle: "在线客服");
               },
               child: Text("Start Chat"),

@@ -7,9 +7,6 @@ package com.hgy.flutter.zd.flutter_zendes_plugin
 import android.app.Activity
 import android.text.TextUtils
 import androidx.annotation.NonNull
-import com.zendesk.service.ErrorResponse
-import com.zendesk.service.ZendeskCallback
-import com.zendesk.util.ObjectUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -23,10 +20,8 @@ import zendesk.answerbot.AnswerBotEngine
 import zendesk.chat.*
 import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
-import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
-import zendesk.messaging.ui.MessagingView
 import zendesk.support.Support
 import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
@@ -112,8 +107,15 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val name = call.argument<String>("name") ?: ""
                 val botLabel = call.argument<String>("botLabel")
                 val toolbarTitle = call.argument<String>("toolbarTitle")
+                val departmentName = call.argument<String>("departmentName") ?: "Department name"
                 val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
+
+                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
+                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
+
                 val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
+                profileProvider?.setVisitorInfo(visitorInfo, null)
+                chatProvider?.setDepartment(departmentName, null)
                 val chatConfiguration = ChatConfiguration.builder()
                         //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
                         .withAgentAvailabilityEnabled(true)

@@ -49,9 +49,12 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let phone = dic["phone"] as? String ?? ""
             let email = dic["email"] as? String ?? ""
             let name = dic["name"] as? String ?? ""
+            let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
+            let toolbarTitle = dic["toolbarTitle"] as? String ?? "在线客服"
+            let departmentName = dic["departmentName"] as? String ?? "Department Name"
             do {
-//                try startChatV2(name: name, email: email, phone: phone)
-                try startChatV1(name: name, email: email, phone: phone)
+                //                try startChatV2(name: name, email: email, phone: phone)
+                try startChatV1(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
             } catch let error{
                 print("error:\(error)")//捕捉到错误，处理错误
             }
@@ -66,39 +69,37 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             break
         }
     }
-    func startChatV1(name:String,email:String,phone:String) throws{
+    func startChatV1(name:String,email:String,phone:String,departmentName:String,botLabel:String) throws{
         //https://developer.zendesk.com/embeddables/docs/ios-chat-sdk/chat
         
         let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
         ZDCChat.updateVisitor { user in
-          user?.phone = phone
-          user?.name = name
-          user?.email = email
+            user?.phone = phone
+            user?.name = name
+            user?.email = email
         }
         ZDCChat.start(in: navigationController, withConfig: {config in
             config?.preChatDataRequirements.name = .optional
             config?.preChatDataRequirements.email = .optional
             config?.preChatDataRequirements.phone = .optional
         })
-               
+        
         // Hides the back button because we are in a tab controller
         ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
     }
     
-    func startChatV2(name:String,email:String,phone:String) throws {
+    func startChatV2(name:String,email:String,phone:String,departmentName:String,botLabel:String) throws {
         let chatConfiguration = ChatConfiguration()
         chatConfiguration.isAgentAvailabilityEnabled = true
         chatConfiguration.isPreChatFormEnabled = true
         
         let chatAPIConfiguration = ChatAPIConfiguration()
-        chatAPIConfiguration.department = "Department name"
+        chatAPIConfiguration.department = departmentName
         chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
         Chat.instance?.configuration = chatAPIConfiguration
         // Name for Bot messages
         let messagingConfiguration = MessagingConfiguration()
-        messagingConfiguration.name = "Chat Bot"
-        
-        
+        messagingConfiguration.name = botLabel
         
         // Build view controller
         let chatEngine = try ChatEngine.engine()
