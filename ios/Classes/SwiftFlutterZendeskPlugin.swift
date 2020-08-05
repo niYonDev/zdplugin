@@ -34,14 +34,14 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             Zendesk.initialize(appId: applicationId,
                                clientId: clientId,
                                zendeskUrl: domainUrl)
-            
             Support.initialize(withZendesk: Zendesk.instance)
-            
-            
             Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
+            
             
             //CHAT SDK
             Chat.initialize(accountKey: accountKey)
+            ZDCChat.initialize(withAccountKey: accountKey)
+            
             result("iOS init completed" )
         case "startChat":
             guard let dic = call.arguments as? Dictionary<String, Any> else { return }
@@ -49,16 +49,12 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let phone = dic["phone"] as? String ?? ""
             let email = dic["email"] as? String ?? ""
             let name = dic["name"] as? String ?? ""
-//            do {
-//                try startChat(name: name, email: email, phone: phone)
-//            } catch let error{
-//                print("error:\(error)")//捕捉到错误，处理错误
-//            }
-            let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
-            ZDCChat.start(in: navigationController, withConfig: nil)
-                   
-            // Hides the back button because we are in a tab controller
-            ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = false
+            do {
+//                try startChatV2(name: name, email: email, phone: phone)
+                try startChatV1(name: name, email: email, phone: phone)
+            } catch let error{
+                print("error:\(error)")//捕捉到错误，处理错误
+            }
             
         case "helpCenter":
             let currentVC = UIApplication.shared.keyWindow?.rootViewController
@@ -70,8 +66,27 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             break
         }
     }
+    func startChatV1(name:String,email:String,phone:String){
+        //https://developer.zendesk.com/embeddables/docs/ios-chat-sdk/chat
+        
+        let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+        ZDCChat.updateVisitor { user in
+          user?.phone = phone
+          user?.name = name
+          user?.email = email
+          user?.addNote("This is a Swift note")
+        }
+        ZDCChat.start(in: navigationController, withConfig: {config in
+            config?.preChatDataRequirements.name = .optional
+            config?.preChatDataRequirements.email = .optional
+            config?.preChatDataRequirements.phone = .optional
+        })
+               
+        // Hides the back button because we are in a tab controller
+        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
+    }
     
-    func startChat(name:String,email:String,phone:String) throws {
+    func startChatV2(name:String,email:String,phone:String) throws {
         let chatConfiguration = ChatConfiguration()
         chatConfiguration.isAgentAvailabilityEnabled = true
         chatConfiguration.isPreChatFormEnabled = true
