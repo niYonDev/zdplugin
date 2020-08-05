@@ -15,10 +15,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _accountKey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
-  String _applicationId = '1323be531854d29aad23e614fe163fd12c282fd750f649c5';
-  String _clientId = 'mobile_sdk_client_1a01855820c478aec204';
-  String _domainUrl = 'https://brplay.zendesk.com';
+  String _accountKey = '';
+  String _applicationId = '';
+  String _clientId = '';
+  String _domainUrl = '';
   FlutterZendeskPlugin _flutterPlugin = FlutterZendeskPlugin();
 
   @override
@@ -70,12 +70,12 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               onPressed: () async {
                 await _flutterPlugin.startChat(
-                    phone: "17384725179",
+                    phone: "173****5179",
                     name: "HGY",
                     email: "HGY@gmail.com",
-                    botLabel: "BR PLAY Bot",
+                    botLabel: "Bot Label",
                     departmentName: "Department Name",
-                    toolbarTitle: "在线客服");
+                    toolbarTitle: "Online Service");
               },
               child: Text("Start Chat"),
             ),

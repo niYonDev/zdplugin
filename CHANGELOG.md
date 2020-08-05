@@ -1,3 +1,3 @@
-## 0.0.9
+## 0.9.0
 
-* TODO: Describe initial release.
+* Zendesk Chat & Support Plugin

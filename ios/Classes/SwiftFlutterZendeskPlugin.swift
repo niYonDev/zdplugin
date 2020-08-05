@@ -53,8 +53,8 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let toolbarTitle = dic["toolbarTitle"] as? String ?? "在线客服"
             let departmentName = dic["departmentName"] as? String ?? "Department Name"
             do {
-                //                try startChatV2(name: name, email: email, phone: phone)
-                try startChatV1(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
+//                try startChatV2(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
+                                try startChatV1(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
             } catch let error{
                 print("error:\(error)")//捕捉到错误，处理错误
             }
@@ -103,7 +103,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         // Build view controller
         let chatEngine = try ChatEngine.engine()
-        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration, chatConfiguration])
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [])
         
         
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
