@@ -62,7 +62,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_zendes_plugin: 38c907c3a73acbf2a750a41f5420aa2cdd550f80
+  flutter_zendes_plugin: f492193440bd05a7e7aadb93e5212333a32248c7
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
   ZDCChat: 46e070452e4543fab9f39913210dfff6527081d1
   ZendeskChatProvidersSDK: 478e7eb4c725c7b4c1c64fa1206ec369346267e4
