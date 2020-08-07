@@ -15,7 +15,15 @@ class FlutterZendeskPlugin {
   }
 
   Future<void> init(String accountKey,
-      {String applicationId, String clientId, String domainUrl,String nameIdentifier,String emailIdentifier}) async {
+      {String applicationId,
+      String clientId,
+      String domainUrl,
+      String nameIdentifier,
+      String emailIdentifier,
+      String phone,
+      String name,
+      String email,
+      String departmentName}) async {
     if (applicationId == null || applicationId.isEmpty) {
       PackageInfo pi = await PackageInfo.fromPlatform();
       applicationId = '${pi.appName}, v${pi.version}(${pi.buildNumber})';
@@ -28,12 +36,22 @@ class FlutterZendeskPlugin {
       'domainUrl': domainUrl,
       'emailIdentifier': emailIdentifier,
       'nameIdentifier': nameIdentifier,
+      'phone': phone,
+      'email': email,
+      'name': name,
+      'departmentName': departmentName,
     });
     debugPrint('Init result ="$result"');
   }
 
-  Future<void> startChat({String phone, String name, String email,String botLabel,String toolbarTitle,String departmentName}) async {
-    return await _channel.invokeMethod('startChat', <String, dynamic>{
+  Future<void> startChatV2(
+      {String phone,
+      String name,
+      String email,
+      String botLabel,
+      String toolbarTitle,
+      String departmentName}) async {
+    return await _channel.invokeMethod('startChatV2', <String, dynamic>{
       'phone': phone,
       'email': email,
       'name': name,
@@ -43,6 +61,9 @@ class FlutterZendeskPlugin {
     });
   }
 
+  Future<dynamic> startChatV1() async {
+    return await _channel.invokeMethod('startChatV1');
+  }
   Future<dynamic> helpCenter() async {
     return await _channel.invokeMethod('helpCenter');
   }

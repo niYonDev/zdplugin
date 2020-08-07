@@ -1,9 +1,5 @@
 package com.hgy.flutter.zd.flutter_zendes_plugin
 
-//import com.zopim.android.sdk.api.ZopimChat
-//import com.zopim.android.sdk.model.VisitorInfo
-//import com.zopim.android.sdk.prechat.PreChatForm
-//import com.zopim.android.sdk.prechat.ZopimChatActivity
 import android.app.Activity
 import android.text.TextUtils
 import androidx.annotation.NonNull
@@ -27,12 +23,7 @@ import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
 
 
-/** FlutterZendesPlugin */
 public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private lateinit var activity: Activity
 
@@ -101,7 +92,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
                 result.success("Init completed!")
             }
-            "startChat" -> {
+            "startChatV2" -> {
                 val phone = call.argument<String>("phone") ?: ""
                 val email = call.argument<String>("email") ?: ""
                 val name = call.argument<String>("name") ?: ""
@@ -156,122 +147,4 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             }
         }
     }
-
-//    /**
-//     * Pre-sets [com.zopim.android.sdk.model.VisitorInfo] data in the chat config and starts the new chat
-//     */
-//    private fun startPreSetData(phone: String, email: String, name: String) {
-//        // build and set visitor info
-//        val visitorInfo = VisitorInfo.Builder()
-//                .phoneNumber(phone)
-//                .email(email)
-//                .name(name)
-//                .build()
-//
-//        // visitor info can be set at any point when that information becomes available
-//        ZopimChat.setVisitorInfo(visitorInfo)
-//        // set pre chat fields as mandatory
-//        val preChatForm = PreChatForm.Builder()
-//                .name(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .email(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .phoneNumber(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .department(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .message(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .build()
-//
-//        // build chat config
-//        val config = ZopimChat.SessionConfig().preChatForm(preChatForm).department("Department My memory")
-//
-//        // start chat activity with config
-//        ZopimChatActivity.startActivity(activity, config)
-//
-//        // Sample breadcrumb
-//        ZopimChat.trackEvent("Started chat with pre-set visitor information,~~~~")
-//    }
-//
-//
-//    /**
-//     * Starts the chat with global config that was provided at init state via [com.zopim.android.sdk.api.ZopimChatApi.init]
-//     *
-//     * @see Global
-//     */
-//    private fun startNoConfigChat(context: Context) {
-//        val chatConfiguration = ChatConfiguration.builder().build()
-//
-////        context.startActivity(Intent(context, ZopimChatActivity::class.java))
-////
-////        // Sample breadcrumb
-////        ZopimChat.trackEvent("Started chat without config")
-//
-//    }
-//
-//    /**
-//     * Starts the chat with all pre chat form fields set as [PreChatForm.Field.OPTIONAL] optional
-//     */
-//    private fun startOptionalPreChat(context: Context) {
-//        // set pre chat fields as optional
-//        val preChatConfig = PreChatForm.Builder()
-//                .name(PreChatForm.Field.OPTIONAL_EDITABLE)
-//                .email(PreChatForm.Field.OPTIONAL_EDITABLE)
-//                .phoneNumber(PreChatForm.Field.OPTIONAL_EDITABLE)
-//                .department(PreChatForm.Field.OPTIONAL_EDITABLE)
-//                .message(PreChatForm.Field.OPTIONAL_EDITABLE)
-//                .build()
-//
-//        // build chat config
-//        val config = ZopimChat.SessionConfig().preChatForm(preChatConfig)
-//
-//        // start chat activity with config
-//        ZopimChatActivity.startActivity(context, config)
-//
-//        // Sample breadcrumb
-//        ZopimChat.trackEvent("Started chat with optional pre-chat form")
-//    }
-//
-//    /**
-//     * Starts the chat with all pre chat form fields set as [PreChatForm.Field.REQUIRED] mandatory
-//     */
-//    private fun startMandatoryPreChat(context: Context) {
-//        // set pre chat fields as mandatory
-//        val preChatForm = PreChatForm.Builder()
-//                .name(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .email(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .phoneNumber(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .department(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .message(PreChatForm.Field.REQUIRED_EDITABLE)
-//                .build()
-//
-//        // build chat config
-//        val config = ZopimChat.SessionConfig().preChatForm(preChatForm)
-//
-//        // start chat activity with config
-//        ZopimChatActivity.startActivity(context, config)
-//
-//        // Sample breadcrumb
-//        ZopimChat.trackEvent("Started chat with mandatory pre-chat form")
-//    }
-//
-//    /**
-//     * Starts the chat all pre chat form fields set as [PreChatForm.Field.NOT_REQUIRED] hidden
-//     */
-//    private fun startNoPreChat(context: Context) {
-//        // set pre chat fields as hidden
-//        val preChatForm = PreChatForm.Builder()
-//                .name(PreChatForm.Field.NOT_REQUIRED)
-//                .email(PreChatForm.Field.NOT_REQUIRED)
-//                .phoneNumber(PreChatForm.Field.NOT_REQUIRED)
-//                .department(PreChatForm.Field.NOT_REQUIRED)
-//                .message(PreChatForm.Field.NOT_REQUIRED)
-//                .build()
-//
-//        // build chat config
-//        val config = ZopimChat.SessionConfig().preChatForm(preChatForm)
-//
-//        // start chat activity with config
-//        ZopimChatActivity.startActivity(context, config)
-//
-//        // Sample breadcrumb
-//        ZopimChat.trackEvent("Started chat without pre-chat form")
-//    }
-
 }

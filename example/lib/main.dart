@@ -15,10 +15,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _accountKey = '';
-  String _applicationId = '';
-  String _clientId = '';
-  String _domainUrl = '';
+  String _accountKey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
+  String _applicationId = '1323be531854d29aad23e614fe163fd12c282fd750f649c5';
+  String _clientId = 'mobile_sdk_client_1a01855820c478aec204';
+  String _domainUrl = 'https://brplay.zendesk.com';
   FlutterZendeskPlugin _flutterPlugin = FlutterZendeskPlugin();
 
   @override
@@ -33,12 +33,18 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       platformVersion = await FlutterZendeskPlugin.platformVersion;
-      _flutterPlugin.init(_accountKey,
-          applicationId: _applicationId,
-          clientId: _clientId,
-          domainUrl: _domainUrl,
-          nameIdentifier: "Grayson Identifier",
-          emailIdentifier: "Grayson@gmail.com");
+      _flutterPlugin.init(
+        _accountKey,
+        applicationId: _applicationId,
+        clientId: _clientId,
+        domainUrl: _domainUrl,
+        nameIdentifier: "Grayson Identifier",
+        emailIdentifier: "Grayson@gmail.com",
+        phone: "173****5179",
+        name: "HGY iOS",
+        email: "HGYiOS@gmail.com",
+        departmentName: "Department Name iOS",
+      );
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -69,7 +75,13 @@ class _MyAppState extends State<MyApp> {
             Text('Chat status: '),
             RaisedButton(
               onPressed: () async {
-                await _flutterPlugin.startChat(
+                await _flutterPlugin.startChatV1();
+              },
+              child: Text("Start Chat V1"),
+            ),
+            RaisedButton(
+              onPressed: () async {
+                await _flutterPlugin.startChatV2(
                     phone: "173****5179",
                     name: "HGY",
                     email: "HGY@gmail.com",
@@ -77,7 +89,7 @@ class _MyAppState extends State<MyApp> {
                     departmentName: "Department Name",
                     toolbarTitle: "Online Service");
               },
-              child: Text("Start Chat"),
+              child: Text("Start Chat V2"),
             ),
             RaisedButton(
               onPressed: () async {

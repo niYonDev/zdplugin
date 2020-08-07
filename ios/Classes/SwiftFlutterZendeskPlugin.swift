@@ -31,34 +31,43 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let emailIdentifier = dic["emailIdentifier"] as? String ?? "emailIdentifier"
             let nameIdentifier = dic["nameIdentifier"] as? String ?? "nameIdentifier"
             
+            let phone = dic["phone"] as? String ?? ""
+            let email = dic["email"] as? String ?? ""
+            let name = dic["name"] as? String ?? ""
+            let departmentName = dic["departmentName"] as? String ?? "Department Name"
+
             Zendesk.initialize(appId: applicationId,
                                clientId: clientId,
                                zendeskUrl: domainUrl)
             Support.initialize(withZendesk: Zendesk.instance)
             Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
-            
-            
-            //CHAT SDK
-            Chat.initialize(accountKey: accountKey)
+
+
+            //V1 Chat
             ZDCChat.initialize(withAccountKey: accountKey)
-            
+            ZDCChat.updateVisitor { user in
+                user?.phone = phone
+                user?.name = name
+                user?.email = email
+            }
+            //CHAT V2 SDK
+            Chat.initialize(accountKey: accountKey)
+            let chatAPIConfiguration = ChatAPIConfiguration()
+            chatAPIConfiguration.department = departmentName
+            chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
+            Chat.instance?.configuration = chatAPIConfiguration
             result("iOS init completed" )
-        case "startChat":
+        case "startChatV1":
+            startChatV1()
+        case "startChatV2":
             guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-            
-            let phone = dic["phone"] as? String ?? ""
-            let email = dic["email"] as? String ?? ""
-            let name = dic["name"] as? String ?? ""
+
             let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
-            let toolbarTitle = dic["toolbarTitle"] as? String ?? "在线客服"
-            let departmentName = dic["departmentName"] as? String ?? "Department Name"
             do {
-//                try startChatV2(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
-                                try startChatV1(name: name, email: email, phone: phone,departmentName: departmentName,botLabel: botLabel)
+                try startChatV2(botLabel: botLabel)
             } catch let error{
                 print("error:\(error)")//捕捉到错误，处理错误
             }
-            
         case "helpCenter":
             let currentVC = UIApplication.shared.keyWindow?.rootViewController
             let hcConfig = HelpCenterUiConfiguration()
@@ -69,41 +78,36 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             break
         }
     }
-    func startChatV1(name:String,email:String,phone:String,departmentName:String,botLabel:String) throws{
+    func startChatV1(){
         //https://developer.zendesk.com/embeddables/docs/ios-chat-sdk/chat
-        
+
         let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
-        ZDCChat.updateVisitor { user in
-            user?.phone = phone
-            user?.name = name
-            user?.email = email
-        }
+
         ZDCChat.start(in: navigationController, withConfig: {config in
             config?.preChatDataRequirements.name = .optional
             config?.preChatDataRequirements.email = .optional
             config?.preChatDataRequirements.phone = .optional
         })
-        
+
         // Hides the back button because we are in a tab controller
         ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
     }
-    
-    func startChatV2(name:String,email:String,phone:String,departmentName:String,botLabel:String) throws {
+
+    func startChatV2(botLabel:String) throws {
         let chatConfiguration = ChatConfiguration()
-        chatConfiguration.isAgentAvailabilityEnabled = true
+        chatConfiguration.isChatTranscriptPromptEnabled = true
         chatConfiguration.isPreChatFormEnabled = true
-        
-        let chatAPIConfiguration = ChatAPIConfiguration()
-        chatAPIConfiguration.department = departmentName
-        chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
-        Chat.instance?.configuration = chatAPIConfiguration
+        chatConfiguration.isOfflineFormEnabled = true
+        chatConfiguration.isAgentAvailabilityEnabled = true
+
+
         // Name for Bot messages
         let messagingConfiguration = MessagingConfiguration()
         messagingConfiguration.name = botLabel
-        
+
         // Build view controller
         let chatEngine = try ChatEngine.engine()
-        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [])
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
         
         
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
