@@ -4,3 +4,8 @@
 flutter packages pub publish --dry-run --server=https://pub.dartlang.org
 flutter packages pub publish --server=https://pub.dartlang.org
 ```
+代理配置
+```
+export http_proxy=http://127.0.0.1:1080
+export https_proxy=http://127.0.0.1:1080
+```
