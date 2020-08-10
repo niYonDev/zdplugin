@@ -96,11 +96,15 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     
     func startChatV2(botLabel:String) throws {
+        let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .hidden, email: .hidden, phoneNumber: .required, department: .hidden)
+        
         let chatConfiguration = ChatConfiguration()
         chatConfiguration.isChatTranscriptPromptEnabled = true
         chatConfiguration.isPreChatFormEnabled = true
         chatConfiguration.isOfflineFormEnabled = true
         chatConfiguration.isAgentAvailabilityEnabled = true
+        chatConfiguration.preChatFormConfiguration = chatFormConfiguration
+        
         
         
         // Name for Bot messages
