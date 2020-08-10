@@ -15,10 +15,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  String _accountKey = '';
-  String _applicationId = '';
-  String _clientId = '';
-  String _domainUrl = '';
+  String _accountKey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
+  String _applicationId = '1323be531854d29aad23e614fe163fd12c282fd750f649c5';
+  String _clientId = 'mobile_sdk_client_1a01855820c478aec204';
+  String _domainUrl = 'https://brplay.zendesk.com';
   FlutterZendeskPlugin _flutterPlugin = FlutterZendeskPlugin();
 
   @override
@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
         domainUrl: _domainUrl,
         nameIdentifier: "Grayson Identifier",
         emailIdentifier: "Grayson@gmail.com",
-        phone: "173****5179",
+        phone: "",
         name: "HGY iOS",
         email: "HGYiOS@gmail.com",
         departmentName: "Department Name iOS",
@@ -85,8 +85,8 @@ class _MyAppState extends State<MyApp> {
                     phone: "173****5179",
                     name: "HGY",
                     email: "HGY@gmail.com",
-                    botLabel: "Bot Label",
-                    departmentName: "Department Name",
+                    botLabel: "BR Play Label",
+                    departmentName: " Department Name",
                     toolbarTitle: "Online Service");
               },
               child: Text("Start Chat V2"),
