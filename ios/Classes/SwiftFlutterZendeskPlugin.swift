@@ -6,8 +6,6 @@ import ChatProvidersSDK
 import ZendeskCoreSDK
 import ZDCChat
 import MessagingSDK
-//import AnswerBotSDK
-//import AnswerBotProvidersSDK
 
 public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     
@@ -72,11 +70,11 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 print("error:\(error)")//捕捉到错误，处理错误
             }
         case "helpCenter":
-            let currentVC = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+            let currentVC = UIApplication.shared.keyWindow?.rootViewController
             let hcConfig = HelpCenterUiConfiguration()
+            hcConfig.showContactOptions = true
             let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
             currentVC?.present(helpCenter, animated: true, completion: nil)
-            //            currentVC?.pushViewController(helpCenter, animated: true)
             result("iOS helpCenter UI:" + helpCenter.description + "   ")
         default:
             break
@@ -89,12 +87,12 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         ZDCChat.start(in: navigationController, withConfig: {config in
             config?.preChatDataRequirements.name = .notRequired
-            config?.preChatDataRequirements.email = .requiredEditable
+            config?.preChatDataRequirements.email = .notRequired
             config?.preChatDataRequirements.phone = .requiredEditable
         })
         
         // Hides the back button because we are in a tab controller
-//        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
+        //        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
     }
     
     func startChatV2(botLabel:String) throws {
@@ -109,9 +107,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         let messagingConfiguration = MessagingConfiguration()
         messagingConfiguration.name = botLabel
         
-        // Build view controller
-//        let answerBotEngine = try AnswerBotEngine.engine()
-        let supportEngine = try SupportEngine.engine()
         let chatEngine = try ChatEngine.engine()
         
         let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
@@ -126,16 +121,5 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         }
         
     }
-    func startConversation() throws {
-        let messagingConfiguration = MessagingConfiguration()
-//        let answerBotEngine = try AnswerBotEngine.engine()
-        let supportEngine = try SupportEngine.engine()
-        let chatEngine = try ChatEngine.engine()
-        
-        let viewController = try Messaging.instance.buildUI(engines: [ supportEngine, chatEngine],
-                                                            configs: [messagingConfiguration])
-        let navigationController = UIApplication.shared.keyWindow?.rootViewController
-        navigationController?.present(viewController
-            , animated: true, completion: nil)
-    }
+    
 }

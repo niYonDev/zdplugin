@@ -115,9 +115,9 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withOfflineFormEnabled(true)
                         //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
                         .withPreChatFormEnabled(true)
-                        .withNameFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                        .withEmailFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                        .withPhoneFieldStatus(PreChatFormFieldStatus.OPTIONAL)
+                        .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
+                        .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
+                        .withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
                         .withDepartmentFieldStatus(PreChatFormFieldStatus.OPTIONAL)
                         .build()
                 MessagingActivity.builder()
