@@ -40,8 +40,9 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                                clientId: clientId,
                                zendeskUrl: domainUrl)
             Support.initialize(withZendesk: Zendesk.instance)
-            
-            
+            Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
+
+
             //V1 Chat
             ZDCChat.initialize(withAccountKey: accountKey)
             ZDCChat.updateVisitor { user in
@@ -50,12 +51,11 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 user?.email = email
             }
             //CHAT V2 SDK
-            Chat.initialize(accountKey: accountKey, queue: .main)
+            Chat.initialize(accountKey: accountKey)
             let chatAPIConfiguration = ChatAPIConfiguration()
             chatAPIConfiguration.department = departmentName
             chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
             Chat.instance?.configuration = chatAPIConfiguration
-            Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
             result("iOS init completed" )
         case "startChatV1":
             startChatV1()
