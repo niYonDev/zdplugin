@@ -6,6 +6,8 @@ import ChatProvidersSDK
 import ZendeskCoreSDK
 import ZDCChat
 import MessagingSDK
+//import AnswerBotSDK
+//import AnswerBotProvidersSDK
 
 public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     
@@ -35,14 +37,13 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let email = dic["email"] as? String ?? ""
             let name = dic["name"] as? String ?? ""
             let departmentName = dic["departmentName"] as? String ?? "Department Name"
-
+            
             Zendesk.initialize(appId: applicationId,
                                clientId: clientId,
                                zendeskUrl: domainUrl)
             Support.initialize(withZendesk: Zendesk.instance)
-            Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
-
-
+            
+            
             //V1 Chat
             ZDCChat.initialize(withAccountKey: accountKey)
             ZDCChat.updateVisitor { user in
@@ -51,28 +52,31 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 user?.email = email
             }
             //CHAT V2 SDK
-            Chat.initialize(accountKey: accountKey)
+            Chat.initialize(accountKey: accountKey, queue: .main)
             let chatAPIConfiguration = ChatAPIConfiguration()
             chatAPIConfiguration.department = departmentName
             chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: phone)
             Chat.instance?.configuration = chatAPIConfiguration
+            Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
             result("iOS init completed" )
         case "startChatV1":
             startChatV1()
         case "startChatV2":
             guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-
+            
             let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
             do {
                 try startChatV2(botLabel: botLabel)
+                //                try  startConversation()
             } catch let error{
                 print("error:\(error)")//捕捉到错误，处理错误
             }
         case "helpCenter":
-            let currentVC = UIApplication.shared.keyWindow?.rootViewController
+            let currentVC = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
             let hcConfig = HelpCenterUiConfiguration()
             let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
             currentVC?.present(helpCenter, animated: true, completion: nil)
+            //            currentVC?.pushViewController(helpCenter, animated: true)
             result("iOS helpCenter UI:" + helpCenter.description + "   ")
         default:
             break
@@ -80,33 +84,36 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     func startChatV1(){
         //https://developer.zendesk.com/embeddables/docs/ios-chat-sdk/chat
-
+        
         let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
-
+        
         ZDCChat.start(in: navigationController, withConfig: {config in
-            config?.preChatDataRequirements.name = .optional
-            config?.preChatDataRequirements.email = .optional
-            config?.preChatDataRequirements.phone = .optional
+            config?.preChatDataRequirements.name = .notRequired
+            config?.preChatDataRequirements.email = .requiredEditable
+            config?.preChatDataRequirements.phone = .requiredEditable
         })
-
+        
         // Hides the back button because we are in a tab controller
-        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
+//        ZDCChat.instance().chatViewController.navigationItem.hidesBackButton = true
     }
-
+    
     func startChatV2(botLabel:String) throws {
         let chatConfiguration = ChatConfiguration()
         chatConfiguration.isChatTranscriptPromptEnabled = true
         chatConfiguration.isPreChatFormEnabled = true
         chatConfiguration.isOfflineFormEnabled = true
         chatConfiguration.isAgentAvailabilityEnabled = true
-
-
+        
+        
         // Name for Bot messages
         let messagingConfiguration = MessagingConfiguration()
         messagingConfiguration.name = botLabel
-
+        
         // Build view controller
+//        let answerBotEngine = try AnswerBotEngine.engine()
+        let supportEngine = try SupportEngine.engine()
         let chatEngine = try ChatEngine.engine()
+        
         let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
         
         
@@ -118,5 +125,17 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 , animated: true, completion: nil)
         }
         
+    }
+    func startConversation() throws {
+        let messagingConfiguration = MessagingConfiguration()
+//        let answerBotEngine = try AnswerBotEngine.engine()
+        let supportEngine = try SupportEngine.engine()
+        let chatEngine = try ChatEngine.engine()
+        
+        let viewController = try Messaging.instance.buildUI(engines: [ supportEngine, chatEngine],
+                                                            configs: [messagingConfiguration])
+        let navigationController = UIApplication.shared.keyWindow?.rootViewController
+        navigationController?.present(viewController
+            , animated: true, completion: nil)
     }
 }
