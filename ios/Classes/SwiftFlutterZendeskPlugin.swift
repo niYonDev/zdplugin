@@ -110,17 +110,17 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     
     func startChatV2(botLabel:String) throws {
-        
-        let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .hidden, email: .hidden, phoneNumber: .required, department: .hidden)
-        
-        let chatConfiguration = ChatConfiguration()
-        chatConfiguration.isChatTranscriptPromptEnabled = true
-        chatConfiguration.isPreChatFormEnabled = true
-        chatConfiguration.isOfflineFormEnabled = true
-        chatConfiguration.isAgentAvailabilityEnabled = true
-        chatConfiguration.preChatFormConfiguration = chatFormConfiguration
-        
-        
+//
+//        let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .hidden, email: .hidden, phoneNumber: .required, department: .hidden)
+//
+//        let chatConfiguration = ChatConfiguration()
+//        chatConfiguration.isChatTranscriptPromptEnabled = true
+//        chatConfiguration.isPreChatFormEnabled = true
+//        chatConfiguration.isOfflineFormEnabled = true
+//        chatConfiguration.isAgentAvailabilityEnabled = true
+//        chatConfiguration.preChatFormConfiguration = chatFormConfiguration
+//
+//
         
         // Name for Bot messages
         let messagingConfiguration = MessagingConfiguration()
@@ -128,7 +128,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         let chatEngine = try ChatEngine.engine()
         
-        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration])
         
         
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {

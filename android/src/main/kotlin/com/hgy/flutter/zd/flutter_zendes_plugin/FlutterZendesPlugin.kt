@@ -3,6 +3,7 @@ package com.hgy.flutter.zd.flutter_zendes_plugin
 import android.app.Activity
 import android.text.TextUtils
 import androidx.annotation.NonNull
+import com.zendesk.logger.Logger
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -11,15 +12,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import zendesk.answerbot.AnswerBot
-import zendesk.answerbot.AnswerBotEngine
 import zendesk.chat.*
 import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
 import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
-import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
 import zendesk.support.requestlist.RequestListActivity
@@ -65,12 +63,17 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
             "init" -> {
+                Logger.setLoggable(BuildConfig.DEBUG)
                 val accountKey = call.argument<String>("accountKey") ?: ""
                 val applicationId = call.argument<String>("applicationId") ?: ""
                 val clientId = call.argument<String>("clientId") ?: ""
                 val zendeskUrl = call.argument<String>("domainUrl") ?: ""
                 val nameIdentifier = call.argument<String>("nameIdentifier") ?: "nameIdentifier"
                 val emailIdentifier = call.argument<String>("emailIdentifier") ?: "emailIdentifier"
+                val phone = call.argument<String>("phone") ?: ""
+                val email = call.argument<String>("email") ?: ""
+                val name = call.argument<String>("name") ?: ""
+                val departmentName = call.argument<String>("departmentName") ?: "Department name"
                 if (TextUtils.isEmpty(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
                 }
@@ -89,9 +92,13 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                                 .build()
                 )
                 //4.Chat SDK
-                Chat.INSTANCE.init(activity, accountKey)
-                //5.AnswerBot SDK
-                AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE)
+                Chat.INSTANCE.init(activity, accountKey, applicationId)
+                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
+                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
+
+                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
+                profileProvider?.setVisitorInfo(visitorInfo, null)
+                chatProvider?.setDepartment(departmentName, null)
                 result.success("Init completed!")
             }
             "startChatV2" -> {
@@ -102,7 +109,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val toolbarTitle = call.argument<String>("toolbarTitle")
                 val departmentName = call.argument<String>("departmentName") ?: "Department name"
                 val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
-
                 val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
                 val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
 
@@ -116,7 +122,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withTranscriptEnabled(true)
                         .withOfflineFormEnabled(true)
                         //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
-                        .withPreChatFormEnabled(true)
+                        .withPreChatFormEnabled(false)
                         .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
@@ -126,7 +132,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withBotLabelString(botLabel)
                         .withBotAvatarDrawable(botAvatar)
                         .withToolbarTitle(toolbarTitle)
-                        .withEngines(ChatEngine.engine(), AnswerBotEngine.engine(), SupportEngine.engine())
+                        .withEngines(ChatEngine.engine())
                         .show(activity, chatConfiguration)
 
             }

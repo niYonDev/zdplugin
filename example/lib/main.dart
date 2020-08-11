@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         domainUrl: _domainUrl,
         nameIdentifier: "Grayson Identifier",
         emailIdentifier: "Grayson@gmail.com",
-        phone: "",
+        phone: "123121515",
         name: "HGY iOS",
         email: "HGYiOS@gmail.com",
         departmentName: "Department Name iOS",
