@@ -13,7 +13,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String _platformVersion = 'Unknown';
   String _accountKey = 'tFh19KFTd8BBqP3gihF65iF9ep7q4sLa';
   String _applicationId = '1323be531854d29aad23e614fe163fd12c282fd750f649c5';
@@ -25,6 +25,19 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    //添加生命周期观察者
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    debugPrint("didChangeAppLifecycleState >>>> " + state.toString());
+    if (state == AppLifecycleState.resumed) {
+      _flutterPlugin.changeNavStatusAction(false);
+    } else {
+      _flutterPlugin.changeNavStatusAction(true);
+    }
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -68,47 +81,47 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
             child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Text('Running on: $_platformVersion\n'),
-            Text('Chat status: '),
-            RaisedButton(
-              onPressed: () async {
-                await _flutterPlugin.startChatV1();
-              },
-              child: Text("Start Chat V1"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-                await _flutterPlugin.startChatV2(
-                    phone: "173****5179",
-                    name: "HGY",
-                    email: "HGY@gmail.com",
-                    botLabel: "BR Play Label",
-                    departmentName: " Department Name",
-                    toolbarTitle: "Online Service");
-              },
-              child: Text("Start Chat V2"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-                await _flutterPlugin.helpCenter().then((value) {
-                  print('object<<<<<<<<<<<<< ' + value.toString());
-                });
-              },
-              child: Text("Help Center"),
-            ),
-            RaisedButton(
-              onPressed: () async {
-                await _flutterPlugin.requestListViewAction().then((value) {
-                  print('object<<<<<<<<<<<<< ' + value.toString());
-                });
-              },
-              child: Text("Request List"),
-            ),
-          ],
-        )),
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text('Running on: $_platformVersion\n'),
+                Text('Chat status: '),
+                RaisedButton(
+                  onPressed: () async {
+                    await _flutterPlugin.startChatV1();
+                  },
+                  child: Text("Start Chat V1"),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    await _flutterPlugin.startChatV2(
+                        phone: "173****5179",
+                        name: "HGY",
+                        email: "HGY@gmail.com",
+                        botLabel: "BR Play Label",
+                        departmentName: " Department Name",
+                        toolbarTitle: "Online Service");
+                  },
+                  child: Text("Start Chat V2"),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    await _flutterPlugin.helpCenter().then((value) {
+                      print('object<<<<<<<<<<<<< ' + value.toString());
+                    });
+                  },
+                  child: Text("Help Center"),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    await _flutterPlugin.requestListViewAction().then((value) {
+                      print('object<<<<<<<<<<<<< ' + value.toString());
+                    });
+                  },
+                  child: Text("Request List"),
+                ),
+              ],
+            )),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await _flutterPlugin.requestViewAction();

@@ -73,4 +73,9 @@ class FlutterZendeskPlugin {
   Future<dynamic> requestListViewAction() async {
     return await _channel.invokeMethod('requestListView');
   }
+  Future<dynamic> changeNavStatusAction(bool isShow) async {
+    return await _channel.invokeMethod('changeNavStatus', <String, dynamic>{
+      'isShow':isShow
+    });
+  }
 }

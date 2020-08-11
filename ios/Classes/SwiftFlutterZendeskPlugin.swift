@@ -61,7 +61,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             startChatV1()
         case "startChatV2":
             guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-            
             let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
             do {
                 try startChatV2(botLabel: botLabel)
@@ -83,6 +82,14 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let rootViewController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
             let viewController = RequestUi.buildRequestList(with: [])
             rootViewController?.pushViewController(viewController, animated: true)
+        case "changeNavStatus":
+            let rootViewController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+            guard let dic = call.arguments as? Dictionary<String, Any> else { return }
+            
+            let isShow = dic["isShow"] as? Bool ?? false
+            rootViewController?.setNavigationBarHidden(!isShow, animated: false)
+            result("rootViewController?.isNavigationBarHidden = isShow >>>>>")
+            
         default:
             break
         }
