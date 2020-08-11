@@ -21,6 +21,8 @@ import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
 import zendesk.support.SupportEngine
 import zendesk.support.guide.HelpCenterActivity
+import zendesk.support.request.RequestActivity
+import zendesk.support.requestlist.RequestListActivity
 
 
 public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -141,6 +143,14 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .config()
                 HelpCenterActivity.builder()
                         .show(activity, helpCenterConfig)
+            }
+            "requestView" -> {
+                RequestActivity.builder()
+                        .show(activity);
+            }
+            "requestListView" -> {
+                RequestListActivity.builder()
+                        .show(activity);
             }
             else -> {
                 result.notImplemented()

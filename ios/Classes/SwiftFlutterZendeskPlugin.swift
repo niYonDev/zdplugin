@@ -41,8 +41,8 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                                zendeskUrl: domainUrl)
             Support.initialize(withZendesk: Zendesk.instance)
             Zendesk.instance?.setIdentity(Identity.createAnonymous(name:nameIdentifier, email: emailIdentifier))
-
-
+            
+            
             //V1 Chat
             ZDCChat.initialize(withAccountKey: accountKey)
             ZDCChat.updateVisitor { user in
@@ -65,17 +65,24 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
             do {
                 try startChatV2(botLabel: botLabel)
-                //                try  startConversation()
             } catch let error{
                 print("error:\(error)")//捕捉到错误，处理错误
             }
         case "helpCenter":
-            let currentVC = UIApplication.shared.keyWindow?.rootViewController
+            let currentVC = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
             let hcConfig = HelpCenterUiConfiguration()
             hcConfig.showContactOptions = true
             let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
-            currentVC?.present(helpCenter, animated: true, completion: nil)
+            currentVC?.pushViewController(helpCenter, animated: true)
             result("iOS helpCenter UI:" + helpCenter.description + "   ")
+        case "requestView":
+            let rootViewController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+            let viewController = RequestUi.buildRequestUi(with: [])
+            rootViewController?.pushViewController(viewController, animated: true)
+        case "requestListView":
+            let rootViewController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+            let viewController = RequestUi.buildRequestList(with: [])
+            rootViewController?.pushViewController(viewController, animated: true)
         default:
             break
         }
@@ -96,6 +103,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     
     func startChatV2(botLabel:String) throws {
+        
         let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .hidden, email: .hidden, phoneNumber: .required, department: .hidden)
         
         let chatConfiguration = ChatConfiguration()
@@ -118,11 +126,8 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
-        }else{
-            let navigationController = UIApplication.shared.keyWindow?.rootViewController
-            navigationController?.present(viewController
-                , animated: true, completion: nil)
         }
+        
         
     }
     

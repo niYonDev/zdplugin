@@ -67,4 +67,10 @@ class FlutterZendeskPlugin {
   Future<dynamic> helpCenter() async {
     return await _channel.invokeMethod('helpCenter');
   }
+  Future<dynamic> requestViewAction() async {
+    return await _channel.invokeMethod('requestView');
+  }
+  Future<dynamic> requestListViewAction() async {
+    return await _channel.invokeMethod('requestListView');
+  }
 }
