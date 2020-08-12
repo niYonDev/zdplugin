@@ -34,7 +34,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let phone = dic["phone"] as? String ?? ""
             let email = dic["email"] as? String ?? ""
             let name = dic["name"] as? String ?? ""
-            let departmentName = dic["departmentName"] as? String ?? "Department Name"
             
             Zendesk.initialize(appId: applicationId,
                                clientId: clientId,
@@ -52,10 +51,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             }
             //CHAT V2 SDK
             Chat.initialize(accountKey: accountKey,appId:applicationId)
-//            let chatAPIConfiguration = ChatAPIConfiguration()
-//            chatAPIConfiguration.department = departmentName
-//            chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: email, phoneNumber: "")
-//            Chat.instance?.configuration = chatAPIConfiguration
             result("iOS init completed" )
         case "startChatV1":
             startChatV1()
@@ -138,12 +133,12 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
         
-         
+        
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
             navigationController.pushViewController(viewController, animated: true)
             let chatAPIConfiguration = ChatAPIConfiguration()
-                               chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: "", phoneNumber: phone)
-                               Chat.instance?.configuration = chatAPIConfiguration
+            chatAPIConfiguration.visitorInfo = VisitorInfo(name: name, email: "", phoneNumber: phone)
+            Chat.instance?.configuration = chatAPIConfiguration
         }
         
         
