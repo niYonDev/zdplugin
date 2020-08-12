@@ -100,6 +100,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         email: "HGY New@gmail.com",
                         botLabel: "BR Play Label",
                         departmentName: " Department Name",
+                        endChatSwitch: false,
                         toolbarTitle: "Online Service");
                   },
                   child: Text("Start Chat V2"),

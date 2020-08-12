@@ -50,6 +50,7 @@ class FlutterZendeskPlugin {
       String email,
       String botLabel,
       String toolbarTitle,
+      bool endChatSwitch,
       String departmentName}) async {
     return await _channel.invokeMethod('startChatV2', <String, dynamic>{
       'phone': phone,
@@ -58,24 +59,28 @@ class FlutterZendeskPlugin {
       'botLabel': botLabel,
       'toolbarTitle': toolbarTitle,
       'departmentName': departmentName,
+      'endChatSwitch': endChatSwitch,
     });
   }
 
   Future<dynamic> startChatV1() async {
     return await _channel.invokeMethod('startChatV1');
   }
+
   Future<dynamic> helpCenter() async {
     return await _channel.invokeMethod('helpCenter');
   }
+
   Future<dynamic> requestViewAction() async {
     return await _channel.invokeMethod('requestView');
   }
+
   Future<dynamic> requestListViewAction() async {
     return await _channel.invokeMethod('requestListView');
   }
+
   Future<dynamic> changeNavStatusAction(bool isShow) async {
-    return await _channel.invokeMethod('changeNavStatus', <String, dynamic>{
-      'isShow':isShow
-    });
+    return await _channel
+        .invokeMethod('changeNavStatus', <String, dynamic>{'isShow': isShow});
   }
 }

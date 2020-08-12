@@ -93,12 +93,13 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 )
                 //4.Chat SDK
                 Chat.INSTANCE.init(activity, accountKey, applicationId)
-                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
-                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
 
-                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
-                profileProvider?.setVisitorInfo(visitorInfo, null)
-                chatProvider?.setDepartment(departmentName, null)
+//                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
+//                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
+//                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
+//                profileProvider?.setVisitorInfo(visitorInfo, null)
+//                profileProvider?.setVisitorNote("Name : $name ; Phone: $phone", null)
+//                chatProvider?.setDepartment(departmentName, null)
                 result.success("Init completed!")
             }
             "startChatV2" -> {
@@ -107,27 +108,38 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val name = call.argument<String>("name") ?: ""
                 val botLabel = call.argument<String>("botLabel")
                 val toolbarTitle = call.argument<String>("toolbarTitle")
+                val endChatSwitch = call.argument<Boolean>("endChatSwitch") ?: true
                 val departmentName = call.argument<String>("departmentName") ?: "Department name"
                 val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
                 val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
                 val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
 
+                var isPre = false;
+                if (TextUtils.isEmpty(phone)) {
+                    isPre = true;
+                }
                 val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
                 profileProvider?.setVisitorInfo(visitorInfo, null)
+                profileProvider?.setVisitorNote("Name : $name ; Phone: $phone", null)
                 chatProvider?.setDepartment(departmentName, null)
-                val chatConfiguration = ChatConfiguration.builder()
+                val chatConfigurationBuilder = ChatConfiguration.builder();
+                chatConfigurationBuilder
                         //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
                         .withAgentAvailabilityEnabled(true)
                         //If true, visitors will be prompted at the end of the chat if they wish to receive a chat transcript or not. Defaults to true.
                         .withTranscriptEnabled(true)
                         .withOfflineFormEnabled(true)
                         //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
-                        .withPreChatFormEnabled(true)
+                        .withPreChatFormEnabled(isPre)
                         .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
                         .withDepartmentFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                        .build()
+                if (!endChatSwitch) {
+                    chatConfigurationBuilder.withChatMenuActions(ChatMenuAction.CHAT_TRANSCRIPT)
+                }
+                val chatConfiguration = chatConfigurationBuilder.build();
+
                 MessagingActivity.builder()
                         .withBotLabelString(botLabel)
                         .withBotAvatarDrawable(botAvatar)
