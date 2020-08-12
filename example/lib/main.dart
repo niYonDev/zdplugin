@@ -54,8 +54,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         nameIdentifier: "Grayson Identifier",
         emailIdentifier: "Grayson@gmail.com",
         phone: "123121515",
-        name: "HGY iOS",
-        email: "HGYiOS@gmail.com",
+        name: "HGY iOSsdsd",
+        email: "HGYiOSsdsd@gmail.com",
         departmentName: "Department Name iOS",
       );
     } on PlatformException {
@@ -96,8 +96,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   onPressed: () async {
                     await _flutterPlugin.startChatV2(
                         phone: "173****5179",
-                        name: "HGY",
-                        email: "HGY@gmail.com",
+                        name: "HGY New",
+                        email: "HGY New@gmail.com",
                         botLabel: "BR Play Label",
                         departmentName: " Department Name",
                         toolbarTitle: "Online Service");

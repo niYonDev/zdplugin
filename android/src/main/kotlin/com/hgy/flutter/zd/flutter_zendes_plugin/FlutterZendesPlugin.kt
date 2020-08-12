@@ -122,7 +122,7 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withTranscriptEnabled(true)
                         .withOfflineFormEnabled(true)
                         //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
-                        .withPreChatFormEnabled(false)
+                        .withPreChatFormEnabled(true)
                         .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
                         .withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
@@ -157,6 +157,9 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             "requestListView" -> {
                 RequestListActivity.builder()
                         .show(activity);
+            }
+            "changeNavStatus" -> {
+
             }
             else -> {
                 result.notImplemented()
