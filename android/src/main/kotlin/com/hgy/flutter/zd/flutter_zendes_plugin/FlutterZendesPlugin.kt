@@ -70,10 +70,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val zendeskUrl = call.argument<String>("domainUrl") ?: ""
                 val nameIdentifier = call.argument<String>("nameIdentifier") ?: "nameIdentifier"
                 val emailIdentifier = call.argument<String>("emailIdentifier") ?: "emailIdentifier"
-                val phone = call.argument<String>("phone") ?: ""
-                val email = call.argument<String>("email") ?: ""
-                val name = call.argument<String>("name") ?: ""
-                val departmentName = call.argument<String>("departmentName") ?: "Department name"
                 if (TextUtils.isEmpty(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
                 }
@@ -93,13 +89,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 )
                 //4.Chat SDK
                 Chat.INSTANCE.init(activity, accountKey, applicationId)
-
-//                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
-//                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
-//                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
-//                profileProvider?.setVisitorInfo(visitorInfo, null)
-//                profileProvider?.setVisitorNote("Name : $name ; Phone: $phone", null)
-//                chatProvider?.setDepartment(departmentName, null)
                 result.success("Init completed!")
             }
             "startChatV2" -> {
