@@ -110,17 +110,20 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     
     func startChatV2(botLabel:String) throws {
-//
-//        let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .hidden, email: .hidden, phoneNumber: .required, department: .hidden)
-//
-//        let chatConfiguration = ChatConfiguration()
-//        chatConfiguration.isChatTranscriptPromptEnabled = true
-//        chatConfiguration.isPreChatFormEnabled = true
-//        chatConfiguration.isOfflineFormEnabled = true
-//        chatConfiguration.isAgentAvailabilityEnabled = true
+
+        let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .required, email: .hidden, phoneNumber: .required, department: .hidden)
+
+        let chatConfiguration = ChatConfiguration()
+        //If true, visitors will be prompted at the end of their chat asking them whether they would like a transcript sent by email.
+        chatConfiguration.isChatTranscriptPromptEnabled = true
+        //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
+        chatConfiguration.isPreChatFormEnabled = false
+        //If this flag is enabled (as well as isAgentAvailabilityEnabled) then visitors will be presented with a form allowing them to leave a message if no agents are available. This will create a support ticket. Defaults to true.
+        chatConfiguration.isOfflineFormEnabled = true
+        //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
+        chatConfiguration.isAgentAvailabilityEnabled = true
+        //This property allows you to configure the requirements of each of the pre-chat form fields.
 //        chatConfiguration.preChatFormConfiguration = chatFormConfiguration
-//
-//
         
         // Name for Bot messages
         let messagingConfiguration = MessagingConfiguration()
@@ -128,7 +131,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         
         let chatEngine = try ChatEngine.engine()
         
-        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [messagingConfiguration])
+        let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration,messagingConfiguration])
         
         
         if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {

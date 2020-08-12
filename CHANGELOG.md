@@ -1,4 +1,4 @@
-## 0.9.9
+## 1.0.0
 
 * Zendesk Chat & Support Plugin
 * iOS Support Chat V1 & Chat V2
