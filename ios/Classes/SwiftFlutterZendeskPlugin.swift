@@ -63,7 +63,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             do {
                 try startChatV2(botLabel: botLabel,phone: phone,name: name)
             } catch let error{
-                print("error:\(error)")//捕捉到错误，处理错误
+                print("error:\(error)")
             }
         case "helpCenter":
             let currentVC = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
@@ -87,6 +87,8 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let isShow = dic["isShow"] as? Bool ?? false
             rootViewController?.setNavigationBarHidden(!isShow, animated: false)
             result("rootViewController?.isNavigationBarHidden = isShow >>>>>")
+        case "getPlatformVersion"
+            result("iOS X.X")
             
         default:
             break
@@ -109,7 +111,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     
     func startChatV2(botLabel:String,phone:String,name:String) throws {
         
-        Chat.profileProvider?.addTags(["标签：昵称："+name+" 手机号："+phone])
+        Chat.profileProvider?.addTags(["teste：name："+name+" phone："+phone])
         
         let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .required, email: .hidden, phoneNumber: .hidden, department: .hidden)
         
