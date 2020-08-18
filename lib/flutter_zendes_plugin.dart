@@ -70,12 +70,14 @@ class FlutterZendeskPlugin {
   Future<dynamic> helpCenter({
       bool categoriesCollapsed,
       bool contactUsButtonVisible,
-      bool showConversationsMenuButton
+      bool showConversationsMenuButton,
+      String toolbarTitle,
   }) async {
     return await _channel.invokeMethod('helpCenter', <String, dynamic>{
       'categoriesCollapsed': categoriesCollapsed,
       'contactUsButtonVisible': contactUsButtonVisible,
       'showConversationsMenuButton': showConversationsMenuButton,
+      'toolbarTitle': toolbarTitle,
     });
   }
 

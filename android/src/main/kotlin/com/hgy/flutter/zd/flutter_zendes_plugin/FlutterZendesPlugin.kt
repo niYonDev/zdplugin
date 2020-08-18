@@ -154,10 +154,12 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         ?: true
                 val showConversationsMenuButton = call.argument<Boolean>("showConversationsMenuButton")
                         ?: true
+                val toolbarTitle = call.argument<String>("toolbarTitle") ?: "Support"
                 val helpCenterConfig: Configuration = HelpCenterActivity.builder()
                         .withCategoriesCollapsed(categoriesCollapsed)
                         .withContactUsButtonVisible(contactUsButtonVisible)
                         .withShowConversationsMenuButton(showConversationsMenuButton)
+                        .withToolbarTitle(toolbarTitle)
                         .config()
                 HelpCenterActivity.builder()
                         .show(activity, helpCenterConfig)
