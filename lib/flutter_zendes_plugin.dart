@@ -67,7 +67,11 @@ class FlutterZendeskPlugin {
     return await _channel.invokeMethod('startChatV1');
   }
 
-  Future<dynamic> helpCenter() async {
+  Future<dynamic> helpCenter({
+      bool categoriesCollapsed,
+      bool contactUsButtonVisible,
+      bool showConversationsMenuButton
+  }) async {
     return await _channel.invokeMethod('helpCenter', <String, dynamic>{
       'categoriesCollapsed': categoriesCollapsed,
       'contactUsButtonVisible': contactUsButtonVisible,
