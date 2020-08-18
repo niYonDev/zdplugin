@@ -159,7 +159,6 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withCategoriesCollapsed(categoriesCollapsed)
                         .withContactUsButtonVisible(contactUsButtonVisible)
                         .withShowConversationsMenuButton(showConversationsMenuButton)
-                        .withToolbarTitle(toolbarTitle)
                         .config()
                 HelpCenterActivity.builder()
                         .show(activity, helpCenterConfig)
