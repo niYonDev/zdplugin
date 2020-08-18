@@ -87,7 +87,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             let isShow = dic["isShow"] as? Bool ?? false
             rootViewController?.setNavigationBarHidden(!isShow, animated: false)
             result("rootViewController?.isNavigationBarHidden = isShow >>>>>")
-        case "getPlatformVersion"
+        case "getPlatformVersion":
             result("iOS X.X")
             
         default:
