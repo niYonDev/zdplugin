@@ -91,7 +91,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
             result("iOS X.X")
             
         default:
-            break
+            result("method not implemented")
         }
     }
     func startChatV1(){
