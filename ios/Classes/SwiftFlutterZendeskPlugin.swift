@@ -45,8 +45,6 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 // 3.Setting Anonymous identity for Zendesk SDK
                 Zendesk.instance?.setIdentity(Identity.createAnonymous())
 
-                //V1 Chat
-                ZDCChat.initialize(withAccountKey: accountKey)
 
                 //CHAT V2 SDK
                 Chat.initialize(accountKey: accountKey,appId:applicationId)
