@@ -61,19 +61,27 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                     print("error:\(error)")
                 }
             case "helpCenter":
-                // Get parameters from flutter
+                // Get variables from flutter
                 guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-                let contactUsButtonVisible = dic["contactUsButtonVisible"] as? Bool ?? false
+                let categoryShowContactOptions = dic["categoryShowContactOptions"] as? Bool ?? true
+                let categoryShowContactOptionsOnEmptySearch = dic["categoryShowContactOptionsOnEmptySearch"] as? Bool ?? true
+                let articleShowContactOptions = dic["articleShowContactOptions"] as? Bool ?? true
 
                 let currentVC = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
+
+                // Category configuration
                 let hcConfig = HelpCenterUiConfiguration()
-                hcConfig.showContactOptions = contactUsButtonVisible
+                hcConfig.showContactOptions = categoryShowContactOptions
+                hcConfig.showContactOptionsOnEmptySearch = categoryShowContactOptionsOnEmptySearch
 
+                // Articles configuration
                 let articleUiConfig = ArticleUiConfiguration()
-                articleUiConfig.showContactOptions = contactUsButtonVisible
+                articleUiConfig.showContactOptions = articleShowContactOptions
 
+                // Start HelpCenter
                 let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
                 currentVC?.pushViewController(helpCenter, animated: true)
+
                 result("iOS helpCenter UI:" + helpCenter.description + "   ")
             case "requestView":
                 let rootViewController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController
@@ -100,7 +108,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     
     func startChatV2(botLabel:String,phone:String,name:String) throws {
         
-        Chat.profileProvider?.addTags(["teste：name："+name+" phone："+phone])
+        //Chat.profileProvider?.addTags(["teste：name："+name+" phone："+phone])
         
         let chatFormConfiguration = ChatSDK.ChatFormConfiguration.init(name: .required, email: .hidden, phoneNumber: .hidden, department: .hidden)
         

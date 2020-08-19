@@ -63,21 +63,33 @@ class FlutterZendeskPlugin {
     });
   }
 
-  Future<dynamic> startChatV1() async {
-    return await _channel.invokeMethod('startChatV1');
-  }
-
+  ///
+  /// Zendesk Helpcenter call, variables differ from android to iOS.
+  ///
+  /// Android variables:
+  /// - categoriesCollapsed
+  /// - contactUsButtonVisible
+  /// - showConversationsMenuButton
+  ///
+  /// iOS variables:
+  /// - categoryShowContactOptions
+  /// - categoryShowContactOptionsOnEmptySearch
+  /// - articleShowContactOptions
   Future<dynamic> helpCenter({
       bool categoriesCollapsed,
       bool contactUsButtonVisible,
       bool showConversationsMenuButton,
-      String toolbarTitle,
+      bool categoryShowContactOptions,
+      bool categoryShowContactOptionsOnEmptySearch,
+      bool articleShowContactOptions,
   }) async {
     return await _channel.invokeMethod('helpCenter', <String, dynamic>{
       'categoriesCollapsed': categoriesCollapsed,
       'contactUsButtonVisible': contactUsButtonVisible,
       'showConversationsMenuButton': showConversationsMenuButton,
-      'toolbarTitle': toolbarTitle,
+      'categoryShowContactOptions': categoryShowContactOptions,
+      'categoryShowContactOptionsOnEmptySearch': categoryShowContactOptionsOnEmptySearch,
+      'articleShowContactOptions': articleShowContactOptions,
     });
   }
 

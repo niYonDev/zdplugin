@@ -15,12 +15,14 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import zendesk.chat.*
 import zendesk.configurations.Configuration
 import zendesk.core.AnonymousIdentity
+import zendesk.core.Identity
 import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
 import zendesk.support.requestlist.RequestListActivity
+import java.lang.Exception
 
 
 public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -63,49 +65,49 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
             "init" -> {
+                // Set logger on debug
                 Logger.setLoggable(BuildConfig.DEBUG)
+
+                // Get variables from flutter
                 val accountKey = call.argument<String>("accountKey") ?: ""
                 val applicationId = call.argument<String>("applicationId") ?: ""
                 val clientId = call.argument<String>("clientId") ?: ""
-                val zendeskUrl = call.argument<String>("domainUrl") ?: ""
-                val nameIdentifier = call.argument<String>("nameIdentifier") ?: "nameIdentifier"
-                val emailIdentifier = call.argument<String>("emailIdentifier") ?: "emailIdentifier"
-                val phone = call.argument<String>("phone") ?: ""
-                val email = call.argument<String>("email") ?: ""
-                val name = call.argument<String>("name") ?: ""
-                val departmentName = call.argument<String>("departmentName") ?: "Department name"
+                val domainUrl = call.argument<String>("domainUrl") ?: ""
+
                 if (TextUtils.isEmpty(accountKey)) {
                     result.error("ACCOUNT_KEY_NULL", "AccountKey is null !", "AccountKey is null !")
+                    return
                 }
-                //1.Zendes SDK
-                Zendesk.INSTANCE.init(activity,
-                        zendeskUrl,
-                        applicationId,
-                        clientId)
-                //2.Support SDK init
-                Support.INSTANCE.init(Zendesk.INSTANCE)
-                //3.setIdentity
-                Zendesk.INSTANCE.setIdentity(
-                        AnonymousIdentity.Builder()
-                                .withNameIdentifier(nameIdentifier)
-                                .withEmailIdentifier(emailIdentifier)
-                                .build()
-                )
-                //4.Chat SDK
-                Chat.INSTANCE.init(activity, accountKey, applicationId)
 
-//                val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
-//                val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
-//                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
-//                profileProvider?.setVisitorInfo(visitorInfo, null)
-//                profileProvider?.setVisitorNote("Name : $name ; Phone: $phone", null)
-//                chatProvider?.setDepartment(departmentName, null)
-                result.success("Init completed!")
+
+                try {
+                    // 1.Init Zendesk SDK instance
+                    Zendesk.INSTANCE.init(activity,
+                            domainUrl,
+                            applicationId,
+                            clientId)
+                    // 2.Init Support SDK instance
+                    Support.INSTANCE.init(Zendesk.INSTANCE)
+
+                    // 3.Setting Anonymous identity for Zendesk SDK
+                    val identity: Identity = AnonymousIdentity.Builder()
+                            .build()
+                    Zendesk.INSTANCE.setIdentity(identity)
+
+                    // 4.Init ChatV2 SDK instance
+                    Chat.INSTANCE.init(activity, accountKey, applicationId)
+
+                    result.success("Init completed!")
+                } catch (e: Exception) {
+                    result.error("INIT_EXCEPTION", e.message, e)
+                }
             }
             "startChatV2" -> {
+
                 val phone = call.argument<String>("phone") ?: ""
                 val email = call.argument<String>("email") ?: ""
                 val name = call.argument<String>("name") ?: ""
+
                 val botLabel = call.argument<String>("botLabel")
                 val toolbarTitle = call.argument<String>("toolbarTitle")
                 val endChatSwitch = call.argument<Boolean>("endChatSwitch") ?: true
@@ -149,19 +151,27 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
 
             }
             "helpCenter" -> {
+                // Get variables from flutter
                 val categoriesCollapsed = call.argument<Boolean>("categoriesCollapsed") ?: false
-                val contactUsButtonVisible = call.argument<Boolean>("contactUsButtonVisible")
-                        ?: true
-                val showConversationsMenuButton = call.argument<Boolean>("showConversationsMenuButton")
-                        ?: true
-                val toolbarTitle = call.argument<String>("toolbarTitle") ?: "Support"
+                val contactUsButtonVisible = call.argument<Boolean>("contactUsButtonVisible") ?: true
+                val showConversationsMenuButton = call.argument<Boolean>("showConversationsMenuButton") ?: true
+
+                // Set configuration
                 val helpCenterConfig: Configuration = HelpCenterActivity.builder()
                         .withCategoriesCollapsed(categoriesCollapsed)
                         .withContactUsButtonVisible(contactUsButtonVisible)
                         .withShowConversationsMenuButton(showConversationsMenuButton)
                         .config()
-                HelpCenterActivity.builder()
-                        .show(activity, helpCenterConfig)
+
+                try {
+                    // Start HelpCenter
+                    HelpCenterActivity.builder()
+                            .show(activity, helpCenterConfig)
+
+                    result.success("Started HelpCenter")
+                } catch (e: Exception) {
+                    result.error("CALL_HELPCENTER", e.message, e)
+                }
             }
             "requestView" -> {
                 RequestActivity.builder()
