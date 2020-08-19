@@ -10,20 +10,13 @@ class FlutterZendeskPlugin {
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
-    debugPrint('version = "$version"');
     return version;
   }
 
   Future<void> init(String accountKey,
       {String applicationId,
       String clientId,
-      String domainUrl,
-      String nameIdentifier,
-      String emailIdentifier,
-      String phone,
-      String name,
-      String email,
-      String departmentName}) async {
+      String domainUrl}) async {
     if (applicationId == null || applicationId.isEmpty) {
       PackageInfo pi = await PackageInfo.fromPlatform();
       applicationId = '${pi.appName}, v${pi.version}(${pi.buildNumber})';
@@ -34,12 +27,6 @@ class FlutterZendeskPlugin {
       'applicationId': applicationId,
       'clientId': clientId,
       'domainUrl': domainUrl,
-      'emailIdentifier': emailIdentifier,
-      'nameIdentifier': nameIdentifier,
-      'phone': phone,
-      'email': email,
-      'name': name,
-      'departmentName': departmentName,
     });
     debugPrint('Init result ="$result"');
   }

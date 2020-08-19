@@ -50,12 +50,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         applicationId: _applicationId,
         clientId: _clientId,
         domainUrl: _domainUrl,
-        nameIdentifier: "Grayson Identifier",
-        emailIdentifier: "Grayson@gmail.com",
-        phone: "123121515",
-        name: "HGY iOSsdsd",
-        email: "HGYiOSsdsd@gmail.com",
-        departmentName: "Department Name iOS",
       );
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
