@@ -30,7 +30,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 let domainUrl = dic["domainUrl"] as? String ?? ""
 
                 if(accountKey.isEmpty) {
-                    result('AccountKey is null')
+                    result("AccountKey is null")
                     break
                 }
 
@@ -45,8 +45,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 // 3.Setting Anonymous identity for Zendesk SDK
                 Zendesk.instance?.setIdentity(Identity.createAnonymous())
 
-
-                //CHAT V2 SDK
+                // 4.Init ChatV2 SDK Instance
                 Chat.initialize(accountKey: accountKey,appId:applicationId)
 
                 result("iOS init completed" )
