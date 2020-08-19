@@ -25,7 +25,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     initPlatformState();
-    //添加生命周期观察者
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -86,12 +85,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               children: <Widget>[
                 Text('Running on: $_platformVersion\n'),
                 Text('Chat status: '),
-                RaisedButton(
-                  onPressed: () async {
-                    await _flutterPlugin.startChatV1();
-                  },
-                  child: Text("Start Chat V1"),
-                ),
                 RaisedButton(
                   onPressed: () async {
                     await _flutterPlugin.startChatV2(
