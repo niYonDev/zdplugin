@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import SupportSDK
+import ZendeskCoreSDK
 import ChatSDK
 import ChatProvidersSDK
 import ZendeskCoreSDK
@@ -15,31 +16,41 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-
         switch call.method {
             case "init":
-                print("case init")
+                // Set logger on debug
                 Logger.isEnabled = true
                 Logger.defaultLevel = .verbose
-                guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-                print("case teste")
 
+                // Get variables from flutter
+                guard let dic = call.arguments as? Dictionary<String, Any> else { return }
                 let accountKey = dic["accountKey"] as? String ?? ""
                 let applicationId = dic["applicationId"] as? String ?? ""
                 let clientId = dic["clientId"] as? String ?? ""
                 let domainUrl = dic["domainUrl"] as? String ?? ""
 
+                if(accountKey.isEmpty) {
+                    result('AccountKey is null')
+                    break
+                }
+
+                // 1.Init Zendesk SDK instance
                 Zendesk.initialize(appId: applicationId,
                                    clientId: clientId,
                                    zendeskUrl: domainUrl)
+
+                // 2.Init Support SDK instance
                 Support.initialize(withZendesk: Zendesk.instance)
+
+                // 3.Setting Anonymous identity for Zendesk SDK
                 Zendesk.instance?.setIdentity(Identity.createAnonymous())
 
+                //V1 Chat
+                ZDCChat.initialize(withAccountKey: accountKey)
 
-        
-                
                 //CHAT V2 SDK
                 Chat.initialize(accountKey: accountKey,appId:applicationId)
+
                 result("iOS init completed" )
             case "startChatV2":
                 guard let dic = call.arguments as? Dictionary<String, Any> else { return }
@@ -53,6 +64,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                     print("error:\(error)")
                 }
             case "helpCenter":
+                // Get parameters from flutter
                 guard let dic = call.arguments as? Dictionary<String, Any> else { return }
                 let contactUsButtonVisible = dic["contactUsButtonVisible"] as? Bool ?? false
 
@@ -63,7 +75,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 let articleUiConfig = ArticleUiConfiguration()
                 articleUiConfig.showContactOptions = contactUsButtonVisible
 
-                let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig, articleUiConfig])
+                let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
                 currentVC?.pushViewController(helpCenter, animated: true)
                 result("iOS helpCenter UI:" + helpCenter.description + "   ")
             case "requestView":
@@ -82,7 +94,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 rootViewController?.setNavigationBarHidden(!isShow, animated: false)
                 result("rootViewController?.isNavigationBarHidden = isShow >>>>>")
             case "getPlatformVersion":
-                result("iOS " + UIDevice.current.systemVersion + "v1")
+                result("iOS " + UIDevice.current.systemVersion)
 
             default:
                 result("method not implemented")

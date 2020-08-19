@@ -39,7 +39,7 @@ Add activities to project manifest, if you want to change themes, just add it to
 
 ## Implementation for iOS
 
-In you projectRoot/ios/Runner/AppDelegate.swift
+In your projectRoot/ios/Runner/AppDelegate.swift
 
 ```swift
 import UIKit
