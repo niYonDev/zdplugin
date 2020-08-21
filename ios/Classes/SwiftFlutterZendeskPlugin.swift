@@ -15,6 +15,20 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
+    private func getPreChatFieldStatus(status: String) -> FormFieldStatus {
+        switch status.uppercased() {
+        case "REQUIRED":
+            return FormFieldStatus.required
+        case "HIDDEN":
+            return FormFieldStatus.hidden
+        case "OPTIONAL":
+            return FormFieldStatus.optional
+        default:
+            return FormFieldStatus.required
+        }
+        
+    }
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
             case "init":
@@ -50,16 +64,107 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
 
                 result("iOS init completed" )
             case "startChatV2":
+                
+                
                 guard let dic = call.arguments as? Dictionary<String, Any> else { return }
-                let botLabel = dic["botLabel"] as? String ?? "Anwser Bot"
-                let phone = dic["phone"] as? String ?? ""
-
-                let name = dic["name"] as? String ?? ""
-                do {
-                    try startChatV2(botLabel: botLabel,phone: phone,name: name)
-                } catch let error{
-                    print("error:\(error)")
+                
+                
+                // Get Visitor variables
+                let visitorPhone = dic["visitorPhone"] as? String ?? ""
+                let visitorEmail = dic["visitorEmail"] as? String ?? ""
+                let visitorName = dic["visitorName"] as? String ?? ""
+                let visitorTags = dic["visitorTags"] as? Array<String> ?? [String]()
+                // Notes not available in iOS
+                // let visitorNotes = dic["visitorNotes"] as? String ?? ""
+                
+                // Variables Chat features
+                let departmentName = dic["departmentName"] as? String ?? "Department name"
+                let botLabel = dic["botLabel"] as? String ?? "Bot"
+                let botAvatar = dic["botAvatar"] as? String
+                let toolbarTitle = dic["toolbarTitle"] as? String ?? "Chat"
+                let withAgentAvailabilityEnabled = dic["withAgentAvailabilityEnabled"] as? Bool ?? true
+                let withChatTranscriptsEnabled = dic["withChatTranscriptsEnabled"] as? Bool ?? false
+                let withPreChatFormEnabled = dic["withPreChatFormEnabled"] as? Bool ?? true
+                let withPreChatFormOptions = dic["withPreChatFormOptions"] as? Dictionary<String, String> ?? [String: String]()
+                let withOfflineFormsEnabled = dic["withOfflineFormsEnabled"] as? Bool ?? true
+                let withChatMenuActions = dic["withChatMenuActions"] as? String
+            
+                // Init configurations
+                let chatAPIConfiguration = ChatAPIConfiguration()
+                let messagingConfiguration = MessagingConfiguration()
+                let chatConfiguration = ChatConfiguration()
+            
+                // Visitor Chat Builders
+                let visitorInfo = VisitorInfo(name: visitorName, email: visitorEmail, phoneNumber: visitorPhone)
+                
+                // ChatAPIConfiguration values
+                chatAPIConfiguration.visitorInfo = visitorInfo
+                if !visitorTags.isEmpty {
+                    chatAPIConfiguration.tags = visitorTags
                 }
+                chatAPIConfiguration.department = departmentName
+                
+                // ChatConfiguration values
+                chatConfiguration.isChatTranscriptPromptEnabled = withChatTranscriptsEnabled
+                chatConfiguration.isPreChatFormEnabled = withPreChatFormEnabled
+                chatConfiguration.isOfflineFormEnabled = withOfflineFormsEnabled
+                chatConfiguration.isAgentAvailabilityEnabled = withAgentAvailabilityEnabled
+                
+                /**
+                 *  Set all fields REQUIRED, if detects the parameter used in the HashMap withPreChatFormOptions,
+                 *  get its current String value and convert it to PreChatFormFieldStatus,
+                 *  then set it in ChatConfigurationBuilder
+                 */
+                if withPreChatFormEnabled {
+                    var nameStatus = FormFieldStatus.required
+                    var emailStatus = FormFieldStatus.required
+                    var phoneStatus = FormFieldStatus.required
+                    var departmentStatus = FormFieldStatus.required
+                    
+                    if let name = withPreChatFormOptions["withNameFieldStatus"] {
+                        nameStatus = getPreChatFieldStatus(status: name)
+                    }
+                    if let email = withPreChatFormOptions["withEmailFieldStatus"] {
+                        emailStatus = getPreChatFieldStatus(status: email)
+                    }
+                    if let phone = withPreChatFormOptions["withPhoneFieldStatus"] {
+                        phoneStatus = getPreChatFieldStatus(status: phone)
+                    }
+                    if let department = withPreChatFormOptions["withDepartmentFieldStatus"] {
+                        departmentStatus = getPreChatFieldStatus(status: department)
+                    }
+                    
+                    let formConfiguration = ChatFormConfiguration(
+                        name: nameStatus,
+                        email: emailStatus,
+                        phoneNumber: phoneStatus,
+                        department: departmentStatus
+                    )
+                    
+                    chatConfiguration.preChatFormConfiguration = formConfiguration
+                }
+                
+                // MessagingConfiguration values
+                messagingConfiguration.name = botLabel
+            
+                
+                
+        
+                do {
+                    let chatEngine = try ChatEngine.engine()
+                    let viewController = try Messaging.instance.buildUI(engines: [chatEngine], configs: [chatConfiguration, messagingConfiguration])
+                    
+                    if let navigationController = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+                        navigationController.pushViewController(viewController, animated: true)
+                        
+                        Chat.instance?.configuration = chatAPIConfiguration
+                    }
+                } catch let error {
+                    
+                }
+                
+    
+                
             case "helpCenter":
                 // Get variables from flutter
                 guard let dic = call.arguments as? Dictionary<String, Any> else { return }
