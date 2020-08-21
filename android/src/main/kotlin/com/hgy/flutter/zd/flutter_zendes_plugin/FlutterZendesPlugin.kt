@@ -23,6 +23,8 @@ import zendesk.support.guide.HelpCenterActivity
 import zendesk.support.request.RequestActivity
 import zendesk.support.requestlist.RequestListActivity
 import java.lang.Exception
+import java.util.*
+import kotlin.collections.HashMap
 
 
 public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -57,6 +59,15 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+    }
+
+    private fun getPreChatFieldStatus(status: String?): PreChatFormFieldStatus {
+        return when(status?.toUpperCase(Locale.getDefault())) {
+            "REQUIRED" -> PreChatFormFieldStatus.REQUIRED
+            "HIDDEN" -> PreChatFormFieldStatus.HIDDEN
+            "OPTIONAL" -> PreChatFormFieldStatus.OPTIONAL
+            else -> PreChatFormFieldStatus.REQUIRED
+        }
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -103,51 +114,91 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 }
             }
             "startChatV2" -> {
+                // Get Visitor variables
+                val visitorPhone = call.argument<String>("visitorPhone") ?: ""
+                val visitorEmail = call.argument<String>("visitorEmail") ?: ""
+                val visitorName = call.argument<String>("visitorName") ?: ""
+                val visitorTags =  call.argument<List<String>>("visitorTags") ?: emptyList()
+                val visitorNotes = call.argument<String>("visitorNotes") ?: ""
 
-                val phone = call.argument<String>("phone") ?: ""
-                val email = call.argument<String>("email") ?: ""
-                val name = call.argument<String>("name") ?: ""
-
-                val botLabel = call.argument<String>("botLabel")
-                val toolbarTitle = call.argument<String>("toolbarTitle")
-                val endChatSwitch = call.argument<Boolean>("endChatSwitch") ?: true
+                // Variables Chat features
                 val departmentName = call.argument<String>("departmentName") ?: "Department name"
+                val botLabel = call.argument<String>("botLabel")
                 val botAvatar = call.argument<Int>("botAvatar") ?: R.drawable.zui_avatar_bot_default
+                val toolbarTitle = call.argument<String>("toolbarTitle") ?: "Chat"
+                val withAgentAvailabilityEnabled = call.argument<Boolean>("withAgentAvailabilityEnabled") ?: true
+                val withChatTranscriptsEnabled = call.argument<Boolean>("withChatTranscriptsEnabled") ?: false
+                val withPreChatFormEnabled = call.argument<Boolean>("withPreChatFormEnabled") ?: true
+                val withPreChatFormOptions = call.argument<HashMap<String, String>>("withPreChatFormOptions") ?: HashMap<String,String>()
+                val withOfflineFormsEnabled = call.argument<Boolean>("withOfflineFormsEnabled") ?: true
+                val withChatMenuActions = call.argument<String>("withChatMenuActions")
+
+                // Init Profile and Chat provider
                 val profileProvider = Chat.INSTANCE.providers()?.profileProvider()
                 val chatProvider = Chat.INSTANCE.providers()?.chatProvider()
 
-                var isPre = false;
-                if (TextUtils.isEmpty(phone)) {
-                    isPre = true;
-                }
-                val visitorInfo = VisitorInfo.builder().withName(name).withEmail(email).withPhoneNumber(phone).build()
-                profileProvider?.setVisitorInfo(visitorInfo, null)
-                profileProvider?.setVisitorNote("Name : $name ; Phone: $phone", null)
-                chatProvider?.setDepartment(departmentName, null)
+                // Visitor and Chat Builders
+                val visitorInfoBuilder = VisitorInfo.builder()
                 val chatConfigurationBuilder = ChatConfiguration.builder();
+
+                // Set visitor info builder
+                if(visitorPhone.isNotEmpty())
+                    visitorInfoBuilder.withPhoneNumber(visitorPhone)
+
+                if(visitorEmail.isNotEmpty())
+                    visitorInfoBuilder.withEmail(visitorEmail)
+
+                if(visitorName.isNotEmpty())
+                    visitorInfoBuilder.withName(visitorName)
+
+                // Set profile provider
+                profileProvider?.setVisitorInfo(visitorInfoBuilder.build(), null)
+
+                if(visitorNotes.isNotEmpty())
+                    profileProvider?.setVisitorNote(visitorNotes, null)
+
+                if(visitorTags.isNotEmpty())
+                    profileProvider?.addVisitorTags(visitorTags, null)
+
+                // Set Chat provider parameters
+                if(departmentName.isNotEmpty())
+                    chatProvider?.setDepartment(departmentName, null)
+
+                // Set Chat Configuration builder
                 chatConfigurationBuilder
-                        //If true, and no agents are available to serve the visitor, they will be presented with a message letting them know that no agents are available. If it's disabled, visitors will remain in a queue waiting for an agent. Defaults to true.
-                        .withAgentAvailabilityEnabled(true)
-                        //If true, visitors will be prompted at the end of the chat if they wish to receive a chat transcript or not. Defaults to true.
-                        .withTranscriptEnabled(true)
-                        .withOfflineFormEnabled(true)
-                        //If true, visitors are prompted for information in a conversational manner prior to starting the chat. Defaults to true.
-                        .withPreChatFormEnabled(isPre)
-                        .withNameFieldStatus(PreChatFormFieldStatus.HIDDEN)
-                        .withEmailFieldStatus(PreChatFormFieldStatus.HIDDEN)
-                        .withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
-                        .withDepartmentFieldStatus(PreChatFormFieldStatus.OPTIONAL)
-                if (!endChatSwitch) {
-                    chatConfigurationBuilder.withChatMenuActions(ChatMenuAction.CHAT_TRANSCRIPT)
+                        .withAgentAvailabilityEnabled(withAgentAvailabilityEnabled)
+                        .withTranscriptEnabled(withChatTranscriptsEnabled)
+                        .withPreChatFormEnabled(withPreChatFormEnabled)
+                        .withOfflineFormEnabled(withOfflineFormsEnabled)
+                        .withChatMenuActions()
+
+                /**
+                 *  Set all fields REQUIRED, if detects the parameter used in the HashMap withPreChatFormOptions,
+                 *  get its current String value and convert it to PreChatFormFieldStatus,
+                 *  then set it in ChatConfigurationBuilder
+                 */
+                if(withPreChatFormEnabled) {
+                    chatConfigurationBuilder.withNameFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                    chatConfigurationBuilder.withEmailFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                    chatConfigurationBuilder.withPhoneFieldStatus(PreChatFormFieldStatus.REQUIRED)
+                    chatConfigurationBuilder.withDepartmentFieldStatus(PreChatFormFieldStatus.REQUIRED)
+
+                    if(withPreChatFormOptions.containsKey("withNameFieldStatus"))
+                        chatConfigurationBuilder.withNameFieldStatus(getPreChatFieldStatus(withPreChatFormOptions["withNameFieldStatus"]))
+                    if(withPreChatFormOptions.containsKey("withEmailFieldStatus"))
+                        chatConfigurationBuilder.withNameFieldStatus(getPreChatFieldStatus(withPreChatFormOptions["withEmailFieldStatus"]))
+                    if(withPreChatFormOptions.containsKey("withPhoneFieldStatus"))
+                        chatConfigurationBuilder.withNameFieldStatus(getPreChatFieldStatus(withPreChatFormOptions["withPhoneFieldStatus"]))
+                    if(withPreChatFormOptions.containsKey("withDepartmentFieldStatus"))
+                        chatConfigurationBuilder.withNameFieldStatus(getPreChatFieldStatus(withPreChatFormOptions["withDepartmentFieldStatus"]))
                 }
-                val chatConfiguration = chatConfigurationBuilder.build();
 
                 MessagingActivity.builder()
                         .withBotLabelString(botLabel)
                         .withBotAvatarDrawable(botAvatar)
                         .withToolbarTitle(toolbarTitle)
                         .withEngines(ChatEngine.engine())
-                        .show(activity, chatConfiguration)
+                        .show(activity, chatConfigurationBuilder.build())
 
             }
             "helpCenter" -> {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -31,22 +32,40 @@ class FlutterZendeskPlugin {
     debugPrint('Init result ="$result"');
   }
 
-  Future<void> startChatV2(
-      {String phone,
-      String name,
-      String email,
-      String botLabel,
-      String toolbarTitle,
-      bool endChatSwitch,
-      String departmentName}) async {
+
+  Future<void> startChatV2({
+    String visitorPhone,
+    String visitorEmail,
+    String visitorName,
+    List<String> visitorTags,
+    String visitorNotes,
+    String departmentName,
+    String botLabel,
+    int botAvatar,
+    String toolbarTitle,
+    bool withAgentAvailabilityEnabled,
+    bool withChatTranscriptsEnabled,
+    bool withPreChatFormEnabled,
+    HashMap<String,String> withPreChatFormOptions,
+    bool withOfflineFormsEnabled,
+    String withChatMenuActions,
+  }) async {
     return await _channel.invokeMethod('startChatV2', <String, dynamic>{
-      'phone': phone,
-      'email': email,
-      'name': name,
-      'botLabel': botLabel,
-      'toolbarTitle': toolbarTitle,
+      'visitorPhone': visitorPhone,
+      'visitorEmail': visitorEmail,
+      'visitorName': visitorName,
+      'visitorTags': visitorTags,
+      'visitorNotes': visitorNotes,
       'departmentName': departmentName,
-      'endChatSwitch': endChatSwitch,
+      'botLabel': botLabel,
+      'botAvatar': botAvatar,
+      'toolbarTitle': toolbarTitle,
+      'withAgentAvailabilityEnabled': withAgentAvailabilityEnabled,
+      'withChatTranscriptsEnabled': withChatTranscriptsEnabled,
+      'withPreChatFormEnabled': withPreChatFormEnabled,
+      'withPreChatFormOptions': withPreChatFormOptions,
+      'withOfflineFormsEnabled': withOfflineFormsEnabled,
+      'withChatMenuActions': withChatMenuActions,
     });
   }
 
