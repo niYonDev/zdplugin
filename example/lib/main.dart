@@ -81,14 +81,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Text('Chat status: '),
                 RaisedButton(
                   onPressed: () async {
-                    await _flutterPlugin.startChatV2(
-                        phone: "173****5179",
-                        name: "HGY New",
-                        email: "HGY New@gmail.com",
-                        botLabel: "BR Play Label",
-                        departmentName: " Department Name",
-                        endChatSwitch: false,
-                        toolbarTitle: "Online Service");
+                    await _flutterPlugin.startChatV2();
                   },
                   child: Text("Start Chat V2"),
                 ),
