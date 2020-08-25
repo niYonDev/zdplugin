@@ -20,6 +20,7 @@ import zendesk.core.Zendesk
 import zendesk.messaging.MessagingActivity
 import zendesk.support.Support
 import zendesk.support.guide.HelpCenterActivity
+import zendesk.support.guide.ViewArticleActivity
 import zendesk.support.request.RequestActivity
 import zendesk.support.requestlist.RequestListActivity
 import java.lang.Exception
@@ -206,6 +207,9 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                 val categoriesCollapsed = call.argument<Boolean>("categoriesCollapsed") ?: false
                 val contactUsButtonVisible = call.argument<Boolean>("contactUsButtonVisible") ?: true
                 val showConversationsMenuButton = call.argument<Boolean>("showConversationsMenuButton") ?: true
+                val categoryShowContactOptions = call.argument<Boolean>("categoryShowContactOptions") ?: true
+                val categoryShowContactOptionsOnEmptySearch = call.argument<Boolean>("categoryShowContactOptionsOnEmptySearch") ?: true
+                val articleShowContactOptions = call.argument<Boolean>("articleShowContactOptions") ?: true
 
                 // Set configuration
                 val helpCenterConfig: Configuration = HelpCenterActivity.builder()
@@ -214,10 +218,15 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .withShowConversationsMenuButton(showConversationsMenuButton)
                         .config()
 
+                // Set configuration for articles
+                val articleConfiguration: Configuration = ViewArticleActivity.builder()
+                        .withContactUsButtonVisible(articleShowContactOptions)
+                        .config()
+
                 try {
                     // Start HelpCenter
                     HelpCenterActivity.builder()
-                            .show(activity, helpCenterConfig)
+                            .show(activity, helpCenterConfig, articleConfiguration)
 
                     result.success("Started HelpCenter")
                 } catch (e: Exception) {
@@ -229,6 +238,8 @@ public class FlutterZendesPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
                         .show(activity);
             }
             "requestListView" -> {
+
+
                 RequestListActivity.builder()
                         .show(activity);
             }
