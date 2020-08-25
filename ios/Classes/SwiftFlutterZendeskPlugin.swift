@@ -184,7 +184,7 @@ public class SwiftFlutterZendeskPlugin: NSObject, FlutterPlugin {
                 articleUiConfig.showContactOptions = articleShowContactOptions
 
                 // Start HelpCenter
-                let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig])
+                let helpCenter = HelpCenterUi.buildHelpCenterOverviewUi(withConfigs: [hcConfig, articleUiConfig])
                 currentVC?.pushViewController(helpCenter, animated: true)
 
                 result("iOS helpCenter UI:" + helpCenter.description + "   ")
